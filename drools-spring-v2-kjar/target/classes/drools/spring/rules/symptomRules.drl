@@ -1,0 +1,11 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Symptom;
+
+rule "All symptoms"
+    when
+        $s: Symptom ( title == "kijavica")
+    then
+    	$s.setTitle("rulee se aktivirao");
+    	update($s);
+end

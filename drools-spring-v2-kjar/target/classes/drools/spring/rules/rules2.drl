@@ -3,7 +3,7 @@ package drools.spring.rules
 
 import drools.spring.example.facts.Item;
 
-rule "Classify Item - High Range"
+rule "Classify Itejjjjm - High Range"
     when
         $i: Item( cost > 200, category == Category.NA )
     then

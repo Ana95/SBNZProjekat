@@ -1,0 +1,10 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Administrator;
+
+rule "All administrators"
+    when
+        $a: Administrator()
+    then
+    	System.out.println($a);
+end

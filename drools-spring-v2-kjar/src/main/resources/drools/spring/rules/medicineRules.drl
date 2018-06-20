@@ -1,0 +1,11 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Medicine;
+import drools.spring.example.facts.Component;
+
+rule "All medicines"
+    when    
+        $m: Medicine()
+    then
+    	System.out.println($m);
+end

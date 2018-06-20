@@ -1,0 +1,10 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Disease;
+
+rule "All disease"
+    when
+        $d: Disease()
+    then
+    	System.out.println($d);
+end

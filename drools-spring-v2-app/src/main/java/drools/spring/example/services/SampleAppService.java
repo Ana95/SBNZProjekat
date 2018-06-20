@@ -1,4 +1,4 @@
-package drools.spring.example;
+package drools.spring.example.services;
 
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
