@@ -96,7 +96,7 @@ public class PatientController {
 		Patient patient = patientService.findOne(id);
 		if(patient != null){
 			patientService.delete(id);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<Patient>(HttpStatus.OK);
 		}
 		return new ResponseEntity<Patient>(HttpStatus.NOT_FOUND);
 	}
