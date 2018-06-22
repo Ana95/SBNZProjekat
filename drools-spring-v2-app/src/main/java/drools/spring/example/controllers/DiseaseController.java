@@ -80,6 +80,7 @@ public class DiseaseController {
 		return new ResponseEntity<ArrayList<Disease>>(diseases, HttpStatus.OK);
 	}
 	
+	@CrossOrigin
 	@RequestMapping(
 		value = "/{id}",
 		method = RequestMethod.DELETE

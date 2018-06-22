@@ -1,0 +1,156 @@
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-11"></div>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addDoctor">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="alert alert-success" role="alert" *ngFor="let doctor of doctors">
+                <h5>
+                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<b>Korisnicko ime :</b> {{doctor.username}}
+                </h5>
+                <h5>
+                    <i class="fa fa-unlock-alt" aria-hidden="true"></i>&nbsp;<b>Lozinka :</b> {{doctor.password}}
+                </h5>
+                <h5>
+                    <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;<b>Ime i prezime :</b> {{doctor.name}} {{doctor.surname}}
+                </h5>
+                <h5>
+                    <i class="fa fa-university" aria-hidden="true"></i>&nbsp;<b>Institucija :</b> {{doctor.institution}}
+                </h5>
+                <hr>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <button class="btn btn-primary btn-sm" (click)="deleteDoctor(doctor)">
+                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-primary btn-sm" (click)="updateDoctor(doctor)" data-toggle="modal" data-target="#updateDoctor">
+                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
+                        </button>
+                    </div>
+                </div>   
+            </div>
+        </div>
+    </div> 
+</div>
+
+
+<div class="modal fade" id="addDoctor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_doctor}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="rForm" (ngSubmit)="addDoctor(rForm.value)">
+                    <div class="form-group">
+                        <label for="title">Korisnicko ime:</label>
+                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime">
+                    </div>
+                    <div *ngIf="!rForm.controls['username'].valid && rForm.controls['username'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Lozinka:</label>
+                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka">
+                    </div>          
+                    <div *ngIf="!rForm.controls['password'].valid && rForm.controls['password'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Ime:</label>
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime">
+                    </div>          
+                    <div *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Prezime:</label>
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime">
+                    </div>          
+                    <div *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Institucija:</label>
+                        <input type="text" class="form-control" formControlName="institution" placeholder="Institucija">
+                    </div>
+                    <div *ngIf="!rForm.controls['institution'].valid && rForm.controls['institution'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateDoctor" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_doctor}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="rForm" (ngSubmit)="updateDoctorsValue(rForm.value)">
+                    <div class="form-group">
+                        <label for="title">Korisnicko ime:</label>
+                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime">
+                    </div>
+                    <div *ngIf="!rForm.controls['username'].valid && rForm.controls['username'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Lozinka:</label>
+                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka">
+                    </div>          
+                    <div *ngIf="!rForm.controls['password'].valid && rForm.controls['password'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Ime:</label>
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime">
+                    </div>          
+                    <div *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Prezime:</label>
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime">
+                    </div>          
+                    <div *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="text">Institucija:</label>
+                        <input type="text" class="form-control" formControlName="institution" placeholder="Institucija">
+                    </div>
+                    <div *ngIf="!rForm.controls['institution'].valid && rForm.controls['institution'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Izmjeni">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>

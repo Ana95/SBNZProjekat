@@ -1,0 +1,9 @@
+.jumbotron{
+    overflow-y: scroll;
+    height: 550px;
+}
+
+#symptoms{
+    overflow-y: scroll;
+    height: 30px;
+}

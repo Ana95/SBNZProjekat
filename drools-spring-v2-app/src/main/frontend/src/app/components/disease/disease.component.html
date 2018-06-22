@@ -1,0 +1,132 @@
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-11"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDisease">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="alert alert-secondary" role="alert" *ngFor="let disease of diseases">
+                <h3 class="alert-heading"><img src="{{image_disease}}" height="40" width="40"> {{disease.title}} </h3>
+                <h5><b>Simptomi :</b> </h5>
+                <div class="jumbotron" id="symptoms">
+                    <p style="color:gray;font-size:15px;" *ngFor = "let symptom of disease.symptoms"> {{symptom.title}} </p>
+                </div>
+                <h5><b>Tip bolesti :</b> {{disease.diseaseType}}</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <button class="btn btn-danger btn-sm" (click)="deleteDisease(disease)">
+                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-danger btn-sm" (click)="updateDisease(disease)" data-toggle="modal" data-target="#updateDisease">
+                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="addDisease" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="rForm" (ngSubmit)="addDisease(rForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv bolesti:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti">
+                    </div>
+                    <div *ngIf="!rForm.controls['title'].valid && rForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Simptomi:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!rForm.controls['optionsModel'].valid && rForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip bolesti:</label>
+                        <select class="form-control" formControlName="type">
+                            <option>Bolest prve grupe</option>
+                            <option>Bolest druge grupe</option>
+                            <option>Bolest trece grupe</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!rForm.controls['type'].valid && rForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateDisease" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateForm" (ngSubmit)="updateDiseaseValue(updateForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv bolesti:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti">
+                    </div>
+                    <div *ngIf="!updateForm.controls['title'].valid && updateForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Simptomi:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!updateForm.controls['optionsModel'].valid && updateForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip bolesti:</label>
+                        <select class="form-control" formControlName="type">
+                            <option>Bolest prve grupe</option>
+                            <option>Bolest druge grupe</option>
+                            <option>Bolest trece grupe</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!updateForm.controls['type'].valid && updateForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateForm.valid" value="Izmjena">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>

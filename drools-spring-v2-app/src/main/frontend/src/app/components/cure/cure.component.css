@@ -1,0 +1,9 @@
+.jumbotron{
+    overflow-y: scroll;
+    height: 550px;
+}
+
+#medicine{
+    overflow-y: scroll;
+    height: 50px;
+}

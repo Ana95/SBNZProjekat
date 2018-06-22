@@ -1,0 +1,134 @@
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-11"></div>
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#addMedicine">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="alert alert-info" role="alert" *ngFor="let medicine of medicines">
+                <h3 class="alert-heading"><img src="{{image_medicine}}" height="40" width="40"> {{medicine.title}} </h3>
+                <h5><b>Sastojci :</b> </h5>
+                <div class="jumbotron" id="medicine">
+                    <p style="color:gray;font-size:15px;" *ngFor="let component of medicine.components"> {{component.title}} </p>
+                </div>
+                <h5><b>Tip lijeka :</b> {{medicine.medicineType}}</h5>
+                <hr>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <button class="btn btn-danger btn-sm" (click)="deleteMedicine(medicine)">
+                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-danger btn-sm" (click)="updateMedicine(medicine)" data-toggle="modal" data-target="#updateMedicine">
+                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="addMedicine" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_medicine}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="addMedicineForm" (ngSubmit)="addMedicine(addMedicineForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv lijeka:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv lijeka">
+                    </div>
+                    <div *ngIf="!addMedicineForm.controls['title'].valid && addMedicineForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Sastojci:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!addMedicineForm.controls['optionsModel'].valid && addMedicineForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip lijeka:</label>
+                        <select class="form-control" formControlName="type">
+                            <option>Antibiotik</option>
+                            <option>Analgetik</option>
+                            <option>Drugi</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!addMedicineForm.controls['type'].valid && addMedicineForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!addMedicineForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateMedicine" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_medicine}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateMedicineForm" (ngSubmit)="updateMedicineValue(updateMedicineForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv bolesti:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti">
+                    </div>
+                    <div *ngIf="!updateMedicineForm.controls['title'].valid && updateMedicineForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Simptomi:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!updateMedicineForm.controls['optionsModel'].valid && updateMedicineForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip bolesti:</label>
+                        <select class="form-control" formControlName="type">
+                            <option>Antibiotik</option>
+                            <option>Analgetik</option>
+                            <option>Drugi</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!updateMedicineForm.controls['type'].valid && updateMedicineForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateMedicineForm.valid" value="Izmjena">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+    
+
