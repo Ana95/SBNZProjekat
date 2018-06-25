@@ -1,0 +1,151 @@
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-11"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addPatient">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+        </button>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="alert alert-secondary" role="alert" *ngFor="let patient of patients">
+                <h3 class="alert-heading"> {{patient.name}} {{patient.surname}} </h3>
+                <h5><b>Prepisani lijekovi :</b> </h5>
+                <div class="jumbotron" id="medicines">
+                    <p style="color:gray;font-size:15px;" *ngFor="let medicine of patient.medicines"> {{medicine.title}} </p>
+                </div>
+                <h5><b>Dijagnostifikovane bolesti :</b> </h5>
+                <div class="jumbotron" id="diseases">
+                    <p style="color:gray;font-size:15px;" *ngFor="let disease of patient.diseases"> {{disease.title}} </p>
+                </div>
+                <div class="row">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <button class="btn btn-danger btn-sm" (click)="deletePatient(patient)">
+                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-danger btn-sm" (click)="updatePatient(patient)" data-toggle="modal" data-target="#updatePatient">
+                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="addPatient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="rForm" (ngSubmit)="addPatient(rForm.value)">
+                    <div class="form-group">
+                        <label for="title">Ime pacijenta:</label>
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime pacijenta">
+                    </div>
+                    <div *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Prezime pacijenta:</label>
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime pacijenta">
+                    </div>
+                    <div *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Godiste:</label>
+                        <input type="text" class="form-control" formControlName="age" placeholder="Godiste">
+                    </div>
+                    <div *ngIf="!rForm.controls['age'].valid && rForm.controls['age'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Lijekove koje koristi:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!rForm.controls['optionsModel'].valid && rForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Dijagnostifikovane bolesti:</label>
+                        <ss-multiselect-dropdown class="form-control" [options]="myOptions1" formControlName="optionsModel1">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!rForm.controls['optionsModel1'].valid && rForm.controls['optionsModel1'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>    
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updatePatient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateForm" (ngSubmit)="updatePatientValues(updateForm.value)">
+                    <div class="form-group">
+                        <label for="title">Ime pacijenta:</label>
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime pacijenta">
+                    </div>
+                    <div *ngIf="!updateForm.controls['name'].valid && updateForm.controls['name'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Prezime pacijenta:</label>
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime pacijenta">
+                    </div>
+                    <div *ngIf="!updateForm.controls['surname'].valid && updateForm.controls['surname'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="title">Godiste:</label>
+                        <input type="text" class="form-control" formControlName="age" placeholder="Godiste">
+                    </div>
+                    <div *ngIf="!updateForm.controls['age'].valid && updateForm.controls['age'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Lijekove koje koristi:</label>
+                        <ss-multiselect-dropdown class="form-control"[ngModel]="selecOptions" [options]="myOptions" formControlName="optionsModel">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!updateForm.controls['optionsModel'].valid && updateForm.controls['optionsModel'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Dijagnostifikovane bolesti:</label>
+                        <ss-multiselect-dropdown class="form-control" [ngModel]="selecOptions1" [options]="myOptions1" formControlName="optionsModel1">                    
+                        </ss-multiselect-dropdown>
+                    </div>
+                    <div *ngIf="!updateForm.controls['optionsModel1'].valid && updateForm.controls['optionsModel1'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>    
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateForm.valid" value="Izmjeni">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+    

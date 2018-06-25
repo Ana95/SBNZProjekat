@@ -35,6 +35,7 @@ public class UserController {
 		saved.setPassword(user.getPassword());
 		saved.setName(user.getName());
 		saved.setSurname(user.getSurname());
+		saved.setRole(user.getRole());
 		saved = userService.save(user);
 		return new ResponseEntity<User>(saved, HttpStatus.CREATED);
 	}
@@ -54,6 +55,7 @@ public class UserController {
 		saved.setPassword(user.getPassword());
 		saved.setName(user.getName());
 		saved.setSurname(user.getSurname());
+		saved.setRole(user.getRole());
 		saved = userService.save(saved);
 		return new ResponseEntity<User>(saved, HttpStatus.OK);
 	}

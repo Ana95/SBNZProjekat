@@ -1,7 +1,15 @@
 package drools.spring.example.controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
+import javax.print.attribute.standard.Media;
+
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import drools.spring.example.facts.Disease;
+import drools.spring.example.facts.Symptom;
 import drools.spring.example.services.DiseaseService;
 
 @RestController
@@ -22,6 +31,13 @@ public class DiseaseController {
 
 	@Autowired
 	private DiseaseService diseaseService;
+	
+	private final KieContainer kieContainer;
+	
+	@Autowired
+    public DiseaseController(KieContainer kieContainer) {
+        this.kieContainer = kieContainer;
+    }
 	
 	@CrossOrigin
 	@RequestMapping(
@@ -92,6 +108,53 @@ public class DiseaseController {
 			return new ResponseEntity<Disease>(HttpStatus.OK);
 		}
 		return new ResponseEntity<Disease>(HttpStatus.NOT_FOUND);
+	}
+	@CrossOrigin
+	@RequestMapping(
+		value = "/rules",
+		method = RequestMethod.POST,
+		consumes = MediaType.APPLICATION_JSON_VALUE,
+		produces = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Disease> getDiseaseByRules(@RequestBody Disease disease){
+		ArrayList<Disease> diseases = (ArrayList<Disease>) diseaseService.findAll();
+		Set<Symptom> symptoms = disease.getSymptoms();
+ 		KieSession kieSession = kieContainer.newKieSession();
+		kieSession.getAgenda().getAgendaGroup("set-symptom-num").setFocus();
+		for (Symptom symptom : symptoms) {
+			kieSession.insert(symptom);
+		}
+		for (Disease d : diseases) {
+			kieSession.insert(d);
+		}
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		Collections.sort(diseases);
+		return new ResponseEntity<Disease>(diseases.get(0), HttpStatus.OK);
+	}
+	
+	@CrossOrigin
+	@RequestMapping(
+		value = "/newRules",
+		method = RequestMethod.POST,
+		produces = MediaType.APPLICATION_JSON_VALUE,
+		consumes = MediaType.APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<ArrayList<Disease>> getRDisease(@RequestBody Disease disease){
+		ArrayList<Disease> diseases = (ArrayList<Disease>) diseaseService.findAll();
+		Set<Symptom> symptoms = disease.getSymptoms();
+		KieSession kieSession = kieContainer.newKieSession();
+		kieSession.getAgenda().getAgendaGroup("set-symptom-num").setFocus();
+		for (Symptom symptom : symptoms) {
+			kieSession.insert(symptom);
+		}
+		for (Disease d : diseases) {
+			kieSession.insert(d);
+		}
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		Collections.sort(diseases);
+		return new ResponseEntity<ArrayList<Disease>>(diseases, HttpStatus.OK);
 	}
 	
 }

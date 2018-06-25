@@ -1,5 +1,6 @@
 package drools.spring.example.facts;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,14 +15,18 @@ public class Symptom {
 	
 	private String title;
 	
+	@Column
+	private Boolean isSpecific;
+	
 	public Symptom() {
 		super();
 	}
 
-	public Symptom(Long id, String title) {
+	public Symptom(Long id, String title, Boolean isSpecific) {
 		super();
 		this.id = id;
 		this.title = title;
+		this.isSpecific = isSpecific;
 	}
 
 	public Long getId() {
@@ -38,6 +43,14 @@ public class Symptom {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public Boolean getIsSpecific() {
+		return isSpecific;
+	}
+
+	public void setIsSpecific(Boolean isSpecific) {
+		this.isSpecific = isSpecific;
 	}
 
 }

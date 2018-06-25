@@ -1,0 +1,28 @@
+<div class="jumbotron">
+    <form [formGroup]="rForm" (ngSubmit)="getSymptoms(rForm.value)">
+        <div class="form-group">
+            <label>Simptomi:</label>
+            <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
+            </ss-multiselect-dropdown>
+        </div>
+        <div *ngIf="!rForm.controls['optionsModel'].valid && rForm.controls['optionsModel'].touched">
+                <span class="badge badge-danger">{{ error }}</span>
+            </div>
+        <div class="modal-footer">
+            <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Prikazi">
+        </div>
+    </form>
+    <br>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Bolest</th>
+            </tr>
+        </thead>
+        <tbody *ngFor="let disease of diseases">
+            <tr>
+                <td>{{disease.title}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

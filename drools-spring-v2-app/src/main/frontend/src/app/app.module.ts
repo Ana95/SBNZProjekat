@@ -18,9 +18,19 @@ import { DiseaseService } from './services/disease.service';
 import { SymptomService } from './services/symptom.service';
 import { MedicineService } from './services/medicine.service';
 import { CureComponent } from './components/cure/cure.component';
+import { LoginComponent } from './components/login/login.component';
+import { MedicalWorkerComponent } from './components/medical-worker/medical-worker.component';
+import { PatientComponent } from './components/patient/patient.component';
+import { PersonalDiagnosisComponent } from './components/personal-diagnosis/personal-diagnosis.component';
+import { SystemDiagnosisComponent } from './components/system-diagnosis/system-diagnosis.component';
+import { SymptomsByDiseaseComponent } from './components/symptoms-by-disease/symptoms-by-disease.component';
+import { DiseasesBySimptomsComponent } from './components/diseases-by-simptoms/diseases-by-simptoms.component';
+import { TherapyComponent } from './components/therapy/therapy.component';
 
 const appRoutes: Routes = [
-  { path: 'administrator', component: AdministratorComponent }
+  { path: 'administrator', component: AdministratorComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'doctor', component: MedicalWorkerComponent }
 ];
 
 @NgModule({
@@ -31,7 +41,15 @@ const appRoutes: Routes = [
     MedicinecomponentComponent,
     DiseaseComponent,
     SymptomComponent,
-    CureComponent
+    CureComponent,
+    LoginComponent,
+    MedicalWorkerComponent,
+    PatientComponent,
+    PersonalDiagnosisComponent,
+    SystemDiagnosisComponent,
+    SymptomsByDiseaseComponent,
+    DiseasesBySimptomsComponent,
+    TherapyComponent
   ],
   imports: [
     BrowserModule,

@@ -25,8 +25,6 @@ public class Patient {
 	
 	private int age;
 	
-	private Date dateOfBirth;
-	
     @ManyToMany
     @JoinTable(
     	name = "patient_diseases",
@@ -47,14 +45,13 @@ public class Patient {
 		super();
 	}
 
-	public Patient(Long id, String name, String surname, int age, Date dateOfBirth, Set<Disease> diseases,
+	public Patient(Long id, String name, String surname, int age, Set<Disease> diseases,
 			Set<Medicine> medicines) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.surname = surname;
 		this.age = age;
-		this.dateOfBirth = dateOfBirth;
 		this.diseases = diseases;
 		this.medicines = medicines;
 	}
@@ -89,14 +86,6 @@ public class Patient {
 
 	public void setAge(int age) {
 		this.age = age;
-	}
-
-	public Date getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
 	}
 
 	public Set<Disease> getDiseases() {

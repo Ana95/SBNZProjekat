@@ -16,7 +16,8 @@ export class SymptomService {
   addSymptom(symptom : Symptom){
     return this.http.post<Symptom>(this.URL, 
       {
-        "title" : symptom.title
+        "title" : symptom.title,
+        "isSpecific" : symptom.isSpecific
       });
   }
 
@@ -28,7 +29,8 @@ export class SymptomService {
     return this.http.put<Symptom>(this.URL, 
     {
       "id" : symptom.id,
-      "title" : symptom.title
+      "title" : symptom.title,
+      "isSpecific" : symptom.isSpecific
     });
   }
   

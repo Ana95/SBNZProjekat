@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Disease } from '../model/disease';
+import { Symptom } from '../model/symptom';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,27 @@ export class DiseaseService {
       })
    }
 
-   deleteDiseaseById(diseaseId : number){
+  deleteDiseaseById(diseaseId : number){
      return this.http.delete(this.URL + '/' + diseaseId);
-   }
+  }
+
+   getDiseaseByRules(disease : Disease){
+     return this.http.post<Disease>(this.URL + '/rules', 
+     {
+      "title" : disease.title,
+      "symptoms": disease.symptoms,
+      "type" : disease.type
+     }
+    );
+  }
+
+  getDiseasesByRules(disease : Disease){
+    return this.http.post<Disease[]>(this.URL + '/newRules', 
+    {
+     "title" : disease.title,
+     "symptoms": disease.symptoms,
+     "type" : disease.type
+    }
+   );
+ }
 }

@@ -30,8 +30,10 @@ public class SymptomController {
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Symptom> createSymptom(@RequestBody Symptom symptom) throws Exception{
+		System.out.println(symptom.getIsSpecific());
 		Symptom saved = new Symptom();
 		saved.setTitle(symptom.getTitle());
+		saved.setIsSpecific(symptom.getIsSpecific());
 		saved = symptomService.save(saved);
 		return new ResponseEntity<Symptom>(saved, HttpStatus.CREATED);
 	}
@@ -48,6 +50,7 @@ public class SymptomController {
 			return new ResponseEntity<Symptom>(HttpStatus.BAD_REQUEST);
 		}
 		saved.setTitle(sympotm.getTitle());
+		saved.setIsSpecific(sympotm.getIsSpecific());
 		saved = symptomService.save(saved);
 		return new ResponseEntity<Symptom>(saved, HttpStatus.OK);
 	}

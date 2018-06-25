@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MedicineComponent } from '../../model/medicine-component';
 import { ComponentService } from '../../services/component.service';
+import { Medicine } from '../../model/medicine';
+import { MedicineService } from '../../services/medicine.service';
 declare var $ : any;
 
 @Component({
@@ -20,8 +22,9 @@ export class MedicinecomponentComponent implements OnInit {
   medicineComponent : MedicineComponent;
   componentForUpdate : MedicineComponent;
   medicineComponents : MedicineComponent[];
+  medicines : Medicine[];
 
-  constructor(private fb:FormBuilder, private componentService : ComponentService) {
+  constructor(private fb:FormBuilder, private componentService : ComponentService, private medicineService : MedicineService) {
     this.rForm = fb.group({
       'content':[null, Validators.required]
     });
@@ -31,8 +34,25 @@ export class MedicinecomponentComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.componentService.getComponents().subscribe(
-      res => this.medicineComponents = res
+    this.medicineService.getMedicines().subscribe(
+      res =>{
+        this.medicines = res;
+        this.componentService.getComponents().subscribe(
+          data => {
+            this.medicineComponents = data;
+            for(let i of this.medicines){
+              let components : MedicineComponent[] = i.components;
+              for(let j of components){
+                for(let h of this.medicineComponents){
+                  if(j.id == h.id){
+                    h.exist = true;
+                  }
+                }
+              }
+            }
+          }
+        ), err => this.errorHandle(err);
+      }
     ), err => this.errorHandle(err);
   }
 

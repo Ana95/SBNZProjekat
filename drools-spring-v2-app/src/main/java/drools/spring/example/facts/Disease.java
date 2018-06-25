@@ -12,7 +12,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 @Entity
-public class Disease {
+public class Disease implements Comparable<Disease>{
 	
 	public enum DISEASETYPE{
 		FIRST_GROUP,
@@ -24,6 +24,10 @@ public class Disease {
 	private Long id;
 	
 	private String title;
+	
+	private int numOfSymptoms;
+	
+	private int specificSymptomFound;
 	
     @ManyToMany
     @JoinTable(
@@ -77,6 +81,33 @@ public class Disease {
 
 	public void setType(DISEASETYPE type) {
 		this.type = type;
+	}
+
+	public int getNumOfSymptoms() {
+		return numOfSymptoms;
+	}
+
+	public void setNumOfSymptoms(int numOfSymptoms) {
+		this.numOfSymptoms = numOfSymptoms;
+	}
+
+	public int getSpecificSymptomFound() {
+		return specificSymptomFound;
+	}
+
+	public void setSpecificSymptomFound(int specificSymptomFound) {
+		this.specificSymptomFound = specificSymptomFound;
+	}
+
+	@Override
+	public int compareTo(Disease o) {
+		// TODO Auto-generated method stub
+		if(numOfSymptoms > o.getNumOfSymptoms()){
+			return 1;
+		}else if(numOfSymptoms < o.getNumOfSymptoms()){
+			return -1;
+		}
+		return 0;
 	}
 	
 }

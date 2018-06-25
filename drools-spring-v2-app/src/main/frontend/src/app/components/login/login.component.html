@@ -1,0 +1,17 @@
+<div class = "container">
+  <div class="wrapper">
+    <form class="form-signin" [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">       
+      <h3 class="form-signin-heading">Prijavite se na sistem!</h3>
+      <hr class="colorgraph"><br>
+      <div *ngIf="!loginForm.controls['username'].valid && loginForm.controls['username'].touched">
+        <span class="badge badge-danger">{{ error }}</span>
+      </div>    
+      <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime"/>
+      <div *ngIf="!loginForm.controls['password'].valid && loginForm.controls['password'].touched">
+        <span class="badge badge-danger">{{ error }}</span>
+      </div>
+      <input type="password" class="form-control" formControlName="password" placeholder="Lozinka"/>     		     
+      <button class="btn btn-lg btn-primary btn-block" [disabled]="!loginForm.valid">Prijava</button>  			
+    </form>			
+  </div>
+</div>

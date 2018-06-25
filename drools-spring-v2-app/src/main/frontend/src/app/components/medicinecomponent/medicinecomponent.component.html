@@ -12,7 +12,7 @@
                     <div class="row">
                         <div class="col-6"></div>
                         <div class="col-6">
-                            <button class="btn btn-primary btn-sm" (click)="deleteComponent(medicineComponent)">
+                            <button class="btn btn-primary btn-sm" (click)="deleteComponent(medicineComponent)" [disabled]="medicineComponent.exist">
                                 <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
                             </button>
                             &nbsp;

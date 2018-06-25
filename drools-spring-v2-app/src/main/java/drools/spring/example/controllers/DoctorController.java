@@ -35,8 +35,8 @@ public class DoctorController {
 		saved.setPassword(doctor.getPassword());
 		saved.setName(doctor.getName());
 		saved.setSurname(doctor.getSurname());
-		saved.setInstitution(doctor.getInstitution());
 		saved.setRole(doctor.getRole());
+		saved.setInstitution(doctor.getInstitution());
 		saved = doctorService.save(saved);
 		return new ResponseEntity<Doctor>(saved, HttpStatus.CREATED);
 	}
@@ -56,8 +56,8 @@ public class DoctorController {
 		saved.setPassword(doctor.getPassword());
 		saved.setName(doctor.getName());
 		saved.setSurname(doctor.getSurname());
-		saved.setInstitution(doctor.getInstitution());
 		saved.setRole(doctor.getRole());
+		saved.setInstitution(doctor.getInstitution());
 		saved = doctorService.save(saved);
 		return new ResponseEntity<Doctor>(saved, HttpStatus.OK);
 	}

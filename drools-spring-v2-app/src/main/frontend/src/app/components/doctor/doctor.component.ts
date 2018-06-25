@@ -39,7 +39,6 @@ export class DoctorComponent implements OnInit {
     this.doctorService.getDoctors().subscribe(
       res => {
         this.doctors = res;
-        console.log(this.doctors);
       }
     ), err => this.errorHandle(err);
   }
@@ -51,7 +50,6 @@ export class DoctorComponent implements OnInit {
     this.surname = post.surname;
     this.institution = post.institution;
     let newDoctor = new Doctor(this.username, this.password, this.name, this.surname, this.institution);
-    console.log(newDoctor);
     this.doctorService.addDoctor(newDoctor).subscribe(
       res =>{
         this.doctors.push(res);

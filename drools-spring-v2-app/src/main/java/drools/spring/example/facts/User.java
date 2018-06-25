@@ -1,5 +1,6 @@
 package drools.spring.example.facts;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +11,7 @@ import javax.persistence.InheritanceType;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User {
+	
 	public enum ROLE{
 		DOCTOR,
 		ADMIN
@@ -18,22 +20,30 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(unique = true)
 	private String username;
+	
 	private String password;
+	
 	private String name;
+	
 	private String surname;
+	
+	private ROLE role;
 	
 	public User() {
 		super();
 	}
 	
-	public User(Long id, String username, String password, String name, String surname) {
+	public User(Long id, String username, String password, String name, String surname, ROLE role) {
 		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.surname = surname;
+		this.role = role;
 	}
 
 	public Long getId() {
@@ -74,6 +84,14 @@ public class User {
 
 	public void setSurname(String surname) {
 		this.surname = surname;
+	}
+	
+	public ROLE getRole() {
+		return role;
+	}
+
+	public void setRole(ROLE role) {
+		this.role = role;
 	}
 
 	@Override

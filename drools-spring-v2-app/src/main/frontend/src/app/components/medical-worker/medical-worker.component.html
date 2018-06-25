@@ -1,0 +1,123 @@
+<div class="fixed-top">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button type="button" class="btn btn-light btn-sm" id="menu_id">
+      <i class="fa fa-bars fa-lg" aria-hidden="true"></i>        
+    </button>  
+    <div class="col-2">                 
+    </div>
+    <div class="col-9">
+      <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-3" type="text" name ="item" placeholder="Pretraga...">
+      </form>     
+    </div>
+    <div>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#logoutModal">
+        <i class="fa fa-sign-out fa-lg" aria-hidden="true"></i> Odjava
+      </button>         
+    </div>
+  </nav>
+</div>
+
+<br><br><br>
+
+<div id="wrapper" class="active">
+  <div id="sidebar-wrapper">
+    <ul id="sidebar_menu" class="sidebar-nav">
+      <div class="nav-side-menu">
+        <div class="menu-list">
+          <ul id="menu-content" class="menu-content collapse out">
+            <li data-toggle="collapse" data-target="#patients" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_patient}}" height="30" width="30"> Pacijenti
+                <span class="arrow"></span>
+              </a>
+            </li>
+            <ul class="sub-menu collapse" id="patients">
+              <li (click)="menu = 'spisakSvihPacijenata'" class="active">
+                <a>Spisak pacijenata</a>
+              </li>
+            </ul>
+            <li  data-toggle="collapse" data-target="#diagnosis" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_diagnosis}}" height="30" width="30"> Dijagnoticki proces 
+                <span class="arrow"></span>
+              </a>
+            </li>
+            <ul class="sub-menu collapse" id="diagnosis">
+              <li class="active" (click)="menu = 'systemDiagnosis'">
+                <a>Sistemski uspostavljena dijagnoza</a>
+              </li>
+              <li class="active" (click)="menu = 'personalDiagnosis'">
+                <a>Licno uspostavljena dijagnoza</a>
+              </li>
+              <li class="active" (click)="menu = 'symptoms'">
+                <a>Simptomi dijagnostifikovane bolesti</a>
+              </li>
+              <li class="active" (click)="menu = 'disease'">
+                <a>Bolesti sa slicnim simptomima</a>
+              </li>
+            </ul>
+            <li  data-toggle="collapse" data-target="#terapy" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_cure}}" height="20" width="20"> Terapija
+                <span class="arrow"></span>
+              </a>
+            </li>
+            <ul class="sub-menu collapse" id="terapy">
+              <li class="active" (click)="menu = 'cure_therapy'">
+                <a>Terapija lijekovima</a>
+              </li>
+            </ul>
+            <li  data-toggle="collapse" data-target="#reports" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_report}}" height="30" width="30"> Izvjestaji
+                <span class="arrow"></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </ul>
+  </div>
+</div>
+
+<br><br>
+  
+<div id="page-content-wrapper">
+  <div class="page-content inset">
+    <div class="row">
+      <div class = "col-md-3"></div>
+      <div class="col-md-9" id="pageContent" [ngSwitch]="menu"> 
+        <app-patient *ngSwitchCase="'spisakSvihPacijenata'"></app-patient>
+        <app-personal-diagnosis *ngSwitchCase="'personalDiagnosis'"></app-personal-diagnosis>
+        <app-system-diagnosis *ngSwitchCase="'systemDiagnosis'"></app-system-diagnosis>
+        <app-symptoms-by-disease *ngSwitchCase="'symptoms'"></app-symptoms-by-disease>
+        <app-diseases-by-simptoms *ngSwitchCase="'disease'"></app-diseases-by-simptoms>
+        <app-therapy *ngSwitchCase="'cure_therapy'"></app-therapy>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4><i class="fa fa-lock"></i> Odjava</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body">
+        <p><i class="fa fa-question-circle"></i> Da li zaista zelite da se odjavite? <br /></p>
+        <div class="actionsBtns">
+          <button class="btn btn-primary" type="button" (click)="logOut()">Odjava</button>
+          &nbsp;
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Otkazi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

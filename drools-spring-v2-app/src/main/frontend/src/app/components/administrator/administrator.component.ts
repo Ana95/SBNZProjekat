@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 declare var $:any;
 
 @Component({
@@ -13,12 +14,18 @@ export class AdministratorComponent implements OnInit {
   image_doctor : string = "assets/img/doctor.png";
   image_disease : string = "assets/img/disease.png";
   
-  constructor() { }
+  constructor(private route: ActivatedRoute, private router: Router) {
+
+   }
 
   ngOnInit() {
     $('#menu_id').on('click', function () {
       $('#sidebar-wrapper').toggleClass('active');
     });
+  }
+
+  logOut(){
+    this.router.navigate(['/login']);
   }
 
 }

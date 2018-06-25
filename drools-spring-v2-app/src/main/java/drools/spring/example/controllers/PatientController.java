@@ -34,7 +34,6 @@ public class PatientController {
 		saved.setName(patient.getName());
 		saved.setSurname(patient.getSurname());
 		saved.setAge(patient.getAge());
-		saved.setDateOfBirth(patient.getDateOfBirth());
 		saved.setDiseases(patient.getDiseases());
 		saved.setMedicines(patient.getMedicines());
 		saved = patientService.save(saved);
@@ -56,7 +55,6 @@ public class PatientController {
 		saved.setName(patient.getName());
 		saved.setSurname(patient.getSurname());
 		saved.setAge(patient.getAge());
-		saved.setDateOfBirth(patient.getDateOfBirth());
 		saved.setDiseases(patient.getDiseases());
 		saved.setMedicines(patient.getMedicines());
 		saved = patientService.save(saved);

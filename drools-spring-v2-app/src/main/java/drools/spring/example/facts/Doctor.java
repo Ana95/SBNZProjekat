@@ -9,24 +9,13 @@ public class Doctor extends User{
 	
 	private String institution;
 	
-	private ROLE role;
-	
 	public Doctor() {
 		super();
 	}
 
 	public Doctor(Long id, String username, String password, String name, String surname, String institution) {
-		super(id, username, password, name, surname);
+		super(id, username, password, name, surname, ROLE.DOCTOR);
 		this.institution = institution;
-		this.role = ROLE.DOCTOR;
-	}
-
-	public ROLE getRole() {
-		return role;
-	}
-
-	public void setRole(ROLE role) {
-		this.role = role;
 	}
 
 	public String getInstitution() {

@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Symptom } from '../../model/symptom';
+import { Disease } from '../../model/disease';
 import { SymptomService } from '../../services/symptom.service';
+import { DiseaseService } from '../../services/disease.service';
 declare var $ : any;
 
 @Component({
@@ -20,8 +22,9 @@ export class SymptomComponent implements OnInit {
   symptom : Symptom;
   symptomForUpdate : Symptom;
   symptoms : Symptom[];
+  diseases : Disease[];
 
-  constructor(private fb:FormBuilder, private symptomService : SymptomService) {
+  constructor(private fb:FormBuilder, private symptomService : SymptomService, private diseaseService : DiseaseService) {
     this.rForm = fb.group({
       'content':[null, Validators.required]
     });
@@ -31,14 +34,35 @@ export class SymptomComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.symptomService.getSymptoms().subscribe(
-      res => this.symptoms = res
+    this.diseaseService.getDiseases().subscribe(
+      res =>{
+        this.diseases = res;
+        this.symptomService.getSymptoms().subscribe(
+          data =>{
+            this.symptoms = data;
+            for(let i of this.diseases){
+              let diseaseSymptoms : Symptom[] = i.symptoms;
+              for(let j of diseaseSymptoms){
+                for(let h of this.symptoms){
+                  if(j.id == h.id){
+                    h.exist = true;
+                  }
+                }
+              }
+            }
+          }
+        ), err => this.errorHandle(err);
+      }
     ), err => this.errorHandle(err);
   }
 
   addSymptom(post){
     this.content = post.content;
     let newSymptom = new Symptom(this.content);
+    console.log(newSymptom.isSpecific);
+    if($('#addSpecific').is(":checked")){
+      newSymptom.isSpecific = true;
+    }
     this.symptomService.addSymptom(newSymptom).subscribe(
       res =>{
         this.symptom = res;
@@ -61,11 +85,16 @@ export class SymptomComponent implements OnInit {
 
   updateSymptom(symptom){
     this.symptomForUpdate = symptom;
+    console.log(symptom.isSpecific);
     this.updateForm.controls['content'].setValue(symptom.title);
+    if(symptom.isSpecific){
+      $('#updateSpecific').attr('checked', 'checked'); 
+    }
   }
 
   updateSymptomValue(post){
     this.symptomForUpdate.title = post.content;
+    this.symptomForUpdate.isSpecific = $('#updateSpecific').is(":checked");
     this.symptomService.updateSymptom(this.symptomForUpdate).subscribe(
       res =>{
       }

@@ -40,8 +40,8 @@ public class DiseaseServiceImpl implements DiseaseService{
 		// TODO Auto-generated method stub
 		KieSession kieSession = kieContainer.newKieSession();
 		kieSession.insert(disease);
-	    kieSession.fireAllRules();
-	    kieSession.dispose();
+		kieSession.fireAllRules();
+		kieSession.dispose();
 		return diseaseRepository.save(disease);
 	}
 

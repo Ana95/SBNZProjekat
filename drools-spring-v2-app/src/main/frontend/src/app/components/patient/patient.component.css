@@ -1,0 +1,14 @@
+.jumbotron{
+    overflow-y: scroll;
+    height: 550px;
+}
+
+#medicines{
+    overflow-y: scroll;
+    height: 30px;
+}
+
+#diseases{
+    overflow-y: scroll;
+    height: 30px;
+}

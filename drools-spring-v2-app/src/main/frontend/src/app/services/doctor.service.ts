@@ -18,6 +18,7 @@ export class DoctorService {
         'password' : doctor.password,
         'name' : doctor.name,
         'surname' : doctor.surname,
+        'role' : doctor.role,
         'institution' : doctor.institution
       } 
     );
@@ -31,6 +32,7 @@ export class DoctorService {
         'password' : doctor.password,
         'name' : doctor.name,
         'surname' : doctor.surname,
+        'role' : doctor.role,
         'institution' : doctor.institution
       }
     );
