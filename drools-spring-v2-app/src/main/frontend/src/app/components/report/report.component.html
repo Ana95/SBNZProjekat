@@ -1,0 +1,102 @@
+<div class="jumbotron">
+    <table class="table" id="reports-table">
+        <tr>
+            <th>Pacijent</th>
+            <th>Tip izvještaja</th>
+            <th>Pojašnjenje</th>
+        </tr>
+        <tr *ngFor="let report of reports">
+            <td>{{report.patient.name}} {{report.patient.surname}} {{report.patient.patientId}}</td>
+            <td>{{report.helper}}</td>
+            <td>
+                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#hronicIllness" *ngIf="report.category == 'CHRONIC_ILLNESS'">
+                  Kratak opis
+                </button>
+                &nbsp;
+                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#addict" *ngIf="report.category == 'ADDICT'">
+                  Kratak opis
+                </button>
+                &nbsp;
+                <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#weakenedImmunity" *ngIf="report.category == 'WEAKENED_IMMUNITY'">
+                    Kratak opis
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="modal fade" id="addict" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_report}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                U poslednjih 6 mjeseci pacijentu su prepisani analgetici barem 6 puta od strane 3 ili više različitih ljekara
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Zatvori">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="hronicIllness" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_report}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                U poslednje dvije godine pacijent je liječen od iste bolesti više od 5 puta
+                <br>
+                <br>
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                Bolest nije "Prehlada" ili "Groznica"
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Zatvori">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="weakenedImmunity" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_report}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                U poslednjih 12 mjeseci pacijent je liječen više od 10 puta od barem dvije različite bolesti za koje su mu prepisani 
+                antibiotici
+                <br>
+                <br>
+                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                U poslednjih 12 mjeseci pacijent nije bolovao od bolesti za koje mu nisu bili prepisani antibiotici
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Zatvori">
+            </div>
+        </div>
+    </div>
+</div>

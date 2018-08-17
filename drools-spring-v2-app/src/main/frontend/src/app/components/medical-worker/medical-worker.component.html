@@ -26,16 +26,43 @@
       <div class="nav-side-menu">
         <div class="menu-list">
           <ul id="menu-content" class="menu-content collapse out">
+            <li data-toggle="collapse" data-target="#medicines" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_path}}" height="25" width="25"> Lijekovi
+                <span class="arrow"></span>
+              </a>
+            </li>
+            <ul class="sub-menu collapse" id="medicines">
+              <li (click)="menu = 'spisakSvihLijekova'" class="active">
+                <a>Spisak lijekova</a>
+              </li>
+            </ul>
             <li data-toggle="collapse" data-target="#patients" class="collapsed active">
               <a>
                 &nbsp;
-                <img src="{{image_patient}}" height="30" width="30"> Pacijenti
+                <img src="{{image_patient}}" height="25" width="25"> Pacijenti
                 <span class="arrow"></span>
               </a>
             </li>
             <ul class="sub-menu collapse" id="patients">
               <li (click)="menu = 'spisakSvihPacijenata'" class="active">
                 <a>Spisak pacijenata</a>
+              </li>
+              <li (click)="menu = 'cure_allergy'" class="active">
+                  <a>Lijekovi koji izazivaju alergije</a>
+                </li>
+            </ul>
+            <li  data-toggle="collapse" data-target="#disease" class="collapsed active">
+              <a>
+                &nbsp;
+                <img src="{{image_disease}}" height="25" width="25"> Bolesti 
+                <span class="arrow"></span>
+              </a>
+            </li>
+            <ul class="sub-menu collapse" id="disease">
+              <li class="active" (click)="menu = 'disease'">
+                <a>Prikaz trenutnih bolesti u sistemu</a>
               </li>
             </ul>
             <li  data-toggle="collapse" data-target="#diagnosis" class="collapsed active">
@@ -47,28 +74,7 @@
             </li>
             <ul class="sub-menu collapse" id="diagnosis">
               <li class="active" (click)="menu = 'systemDiagnosis'">
-                <a>Sistemski uspostavljena dijagnoza</a>
-              </li>
-              <li class="active" (click)="menu = 'personalDiagnosis'">
-                <a>Licno uspostavljena dijagnoza</a>
-              </li>
-              <li class="active" (click)="menu = 'symptoms'">
-                <a>Simptomi dijagnostifikovane bolesti</a>
-              </li>
-              <li class="active" (click)="menu = 'disease'">
-                <a>Bolesti sa slicnim simptomima</a>
-              </li>
-            </ul>
-            <li  data-toggle="collapse" data-target="#terapy" class="collapsed active">
-              <a>
-                &nbsp;
-                <img src="{{image_cure}}" height="20" width="20"> Terapija
-                <span class="arrow"></span>
-              </a>
-            </li>
-            <ul class="sub-menu collapse" id="terapy">
-              <li class="active" (click)="menu = 'cure_therapy'">
-                <a>Terapija lijekovima</a>
+                <a>Uspostavljene dijagnoze</a>
               </li>
             </ul>
             <li  data-toggle="collapse" data-target="#reports" class="collapsed active">
@@ -78,6 +84,11 @@
                 <span class="arrow"></span>
               </a>
             </li>
+            <ul class="sub-menu collapse" id="reports">
+                <li class="active" (click)="menu = 'reports'">
+                  <a>Prikaz svih</a>
+                </li>
+            </ul>
           </ul>
         </div>
       </div>
@@ -91,13 +102,13 @@
   <div class="page-content inset">
     <div class="row">
       <div class = "col-md-3"></div>
-      <div class="col-md-9" id="pageContent" [ngSwitch]="menu"> 
+      <div class="col-md-9" id="pageContent" [ngSwitch]="menu">
+        <app-illness *ngSwitchCase="'disease'"></app-illness>
+        <app-cure *ngSwitchCase="'spisakSvihLijekova'"></app-cure>
         <app-patient *ngSwitchCase="'spisakSvihPacijenata'"></app-patient>
-        <app-personal-diagnosis *ngSwitchCase="'personalDiagnosis'"></app-personal-diagnosis>
+        <app-cure-allergy *ngSwitchCase="'cure_allergy'"></app-cure-allergy>
         <app-system-diagnosis *ngSwitchCase="'systemDiagnosis'"></app-system-diagnosis>
-        <app-symptoms-by-disease *ngSwitchCase="'symptoms'"></app-symptoms-by-disease>
-        <app-diseases-by-simptoms *ngSwitchCase="'disease'"></app-diseases-by-simptoms>
-        <app-therapy *ngSwitchCase="'cure_therapy'"></app-therapy>
+        <app-report *ngSwitchCase="'reports'"></app-report>
       </div>
     </div>
   </div>

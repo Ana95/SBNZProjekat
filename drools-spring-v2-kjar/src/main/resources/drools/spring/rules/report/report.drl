@@ -1,0 +1,107 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Diagnose;
+import drools.spring.example.facts.DiagnoseMedicament;
+import drools.spring.example.facts.Patient;
+import drools.spring.example.facts.Report;
+
+import java.util.List;
+import java.util.ArrayList;
+
+rule "Check if patient has chronic illness"
+	agenda-group "reports"
+	no-loop 
+	when
+		$diagnose: Diagnose( $in: illnessName && $pId: patientId && illnessName != "Prehlada" && illnessName != "Groznica" )
+		Number(intValue >= 5) from accumulate(
+			$d1: Diagnose(
+				this != $diagnose,
+				illnessName == $in,
+				patientId == $pId,
+				date > (addMonths(-24))
+			),
+			count($d1)
+		)
+	then
+		Report report = new Report();
+		report.setCategory(Report.Category.CHRONIC_ILLNESS);
+		report.setHelper("Pacijent sa mogućim hroničnim oboljenjem: " + $in);
+		Patient patient = new Patient();
+		patient.setId($pId);
+		report.setPatient(patient);
+		insert(report);
+end
+
+rule "Check if patient is addict"
+	agenda-group "reports"
+	no-loop 
+    when
+        $diagnose: Diagnose( $pId: patientId && $iId: id && $docId: doctorId)
+        $dm : DiagnoseMedicament( $patientId: patientId && diagnoseId == $iId && medicamentCategory == "ANALGESICS" && doctorId == $docId )
+        
+        $diagnose2: Diagnose( patientId == $pId && $i2Id: id && $i2Id != $iId && $doc2Id: doctorId && $doc2Id != $docId)
+        $dm2 : DiagnoseMedicament( diagnoseId == $i2Id && medicamentCategory == "ANALGESICS" && doctorId == $doc2Id )
+        
+        $resList: List(size >= 5) from accumulate(
+            $d1: DiagnoseMedicament(
+                this != $dm,
+                patientId == $patientId,
+                medicamentCategory == "ANALGESICS",
+        		date > (addMonths(-6))
+            ),
+            init(List<DiagnoseMedicament> list1 = new ArrayList<DiagnoseMedicament>();),
+            action(list1.add($d1);),
+            result(list1)
+        )
+        Number(intValue >= 1) from accumulate(
+        	$u: DiagnoseMedicament (
+        	    this != $dm,
+        	    this != $dm2,
+                doctorId != $docId && doctorId != $doc2Id
+            ) from $resList,
+            count($u)
+        )
+    then   	
+    	Report report = new Report();
+    	report.setCategory(Report.Category.ADDICT);
+    	report.setHelper("Pacijent je potencijalni zavisnik");
+    	Patient p = new Patient();
+    	p.setId($pId);
+    	report.setPatient(p);
+    	insert(report);
+end
+
+
+rule "Check if patient has weakened immunity"
+	agenda-group "reports"
+	no-loop
+    when
+        $diagnose: Diagnose( $pId: patientId && $iId: id && $in: illnessName)
+        $dm : DiagnoseMedicament( $patientId: patientId && diagnoseId == $iId && medicamentCategory == "ANTIBIOTICS" && illnessName == $in )
+        not DiagnoseMedicament( patientId == $pId && 
+        		medicamentCategory != "ANTIBIOTICS" && date > (addMonths(-12)))
+        
+        $resList: List(size >= 10) from accumulate(
+            $d1: DiagnoseMedicament(
+                this != $dm,
+                patientId == $patientId,
+                medicamentCategory == "ANTIBIOTICS",
+                illnessName != $in,
+        		date > (addMonths(-12))
+            ),
+            init(List<DiagnoseMedicament> list1 = new ArrayList<DiagnoseMedicament>();),
+            action(list1.add($d1);),
+            result(list1)
+        )
+        
+       
+    then   	
+    	Report report = new Report();
+	   	report.setCategory(Report.Category.WEAKENED_IMMUNITY);
+	   	report.setHelper("Pacijent sa oslabljenim imunitetom");
+		Patient p = new Patient();
+	   	p.setId($pId);
+    	report.setPatient(p);
+    	insert(report);
+    	
+end

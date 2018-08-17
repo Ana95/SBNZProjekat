@@ -1,0 +1,26 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Medicament;
+import drools.spring.example.facts.MedicamentAllergy;
+import drools.spring.example.facts.Ingredient;
+import drools.spring.example.facts.IngredientAllergy;
+
+global Long idPatient;
+
+rule "Check if patient is allergic to medicament"
+	agenda-group "check-allergies"
+	when
+		$medicament : Medicament( $medName: name )
+		$allergy : MedicamentAllergy( patientId == idPatient && medicamentName == $medName)
+	then
+	insert($medName);
+end
+
+rule "Check if patient is allergic to ingredient"
+	agenda-group "check-allergies"
+	when
+		$ingredient : Ingredient ( $ingrName: name )
+		$allergy : IngredientAllergy( patientId == idPatient && ingredientName == $ingrName)
+	then
+	insert($ingrName);
+end

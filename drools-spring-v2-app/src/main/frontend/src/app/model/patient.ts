@@ -1,18 +1,15 @@
-import { Disease } from '../model/disease';
-import { Medicine } from '../model/medicine';
+import { Medicament } from '../model/medicament';
 
 export class Patient {
     id : number;
+    patientId: string;
     name : string;
     surname : string;
     age : number;
-    diseases : Disease[];
-    medicines : Medicine[];
-    constructor(name : string, surname : string, age : number, diseases : Disease[], medicines : Medicine[]){
+    constructor(patientId : string, name : string, surname : string, age : number){
+        this.patientId = patientId;
         this.name = name;
         this.surname = surname;
         this.age = age;
-        this.medicines = medicines;
-        this.diseases = diseases;
     }
 }

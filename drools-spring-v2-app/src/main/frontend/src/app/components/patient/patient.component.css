@@ -12,3 +12,18 @@
     overflow-y: scroll;
     height: 30px;
 }
+
+#patient th, 
+#patient td {
+    border: 1px solid rgb(16, 6, 56);
+}
+
+#medicaments-body{
+    overflow-y: scroll;
+    height: 450px; 
+}
+
+#ingredientsBody{
+    overflow-y: scroll;
+    height: 350px; 
+}

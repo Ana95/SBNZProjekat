@@ -1,5 +1,0 @@
-export enum MEDICINETYPE {
-    ANTIBIOTIC,
-    ANALGESIC,
-    OTHER
-}

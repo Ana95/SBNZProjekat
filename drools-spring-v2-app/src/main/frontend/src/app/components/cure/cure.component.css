@@ -7,3 +7,13 @@
     overflow-y: scroll;
     height: 50px;
 }
+
+#medicament th, 
+#medicament td {
+    border: 1px solid rgb(16, 6, 56);
+}
+
+#ingredients-body{
+    overflow-y: scroll;
+    height: 250px;
+}

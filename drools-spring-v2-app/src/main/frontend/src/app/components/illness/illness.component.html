@@ -1,0 +1,311 @@
+<div class="jumbotron">
+    <div class="row">
+        <div class="col-md-10"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addIllness" *ngIf="currentUser.role=='ADMIN'">
+            <i class="fa fa-plus" aria-hidden="true"></i> Dodaj bolest
+        </button>
+    </div>
+    <br>
+    <table class="table" id="illnesses-table">
+        <tr>
+            <th>Naziv</th>
+            <th>Kategorija</th>
+            <th>Operacije</th>
+        </tr>
+        <tr *ngFor="let illness of illnesses">
+            <td>{{ illness.name }}</td>
+            <td>{{ illness.illnessTypeHelper }}</td>
+            <td>
+                <button class="btn btn-info btn-sm" (click)="updateIllness(illness)" data-toggle="modal" data-target="#updateIllness" *ngIf="currentUser.role=='ADMIN'">
+                    <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmijeni
+                </button>
+                &nbsp;
+                <button class="btn btn-danger btn-sm" (click)="deleteIllness(illness)" *ngIf="currentUser.role=='ADMIN'">
+                    <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                </button>
+                &nbsp;
+                <button class="btn btn-success btn-sm" (click)="showSymptoms(illness)" data-toggle="modal" data-target="#illnessSymptoms">
+                    <i class="fa fa-list fa-lg" aria-hidden="true"></i> Simptomi
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="modal fade" id="addIllness" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="rForm" (ngSubmit)="addIllness(rForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv bolesti:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti" [ngClass]="{
+                            'is-valid' : rForm.controls['title'].valid && rForm.controls['title'].touched,
+                            'is-invalid' : rForm.controls['title'].invalid && rForm.controls['title'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!rForm.controls['title'].valid && rForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip bolesti:</label>
+                        <select class="form-control" formControlName="type" [ngClass]="{
+                            'is-valid' : rForm.controls['type'].valid && rForm.controls['type'].touched,
+                            'is-invalid' : rForm.controls['type'].invalid && rForm.controls['type'].touched
+                        }">
+                            <option>Bolest prve grupe</option>
+                            <option>Bolest druge grupe</option>
+                            <option>Bolest treće grupe</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!rForm.controls['type'].valid && rForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateIllness" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateForm" (ngSubmit)="updateIllnessValue(updateForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv bolesti:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti" [ngClass]="{
+                            'is-valid' : updateForm.controls['title'].valid && updateForm.controls['title'].touched,
+                            'is-invalid' : updateForm.controls['title'].invalid && updateForm.controls['title'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!updateForm.controls['title'].valid && updateForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>          
+                    <div class="form-group">
+                        <label for="text">Tip bolesti:</label>
+                        <select class="form-control" formControlName="type" [ngClass]="{
+                            'is-valid' : updateForm.controls['type'].valid && updateForm.controls['type'].touched,
+                            'is-invalid' : updateForm.controls['type'].invalid && updateForm.controls['type'].touched
+                        }">
+                            <option>Bolest prve grupe</option>
+                            <option>Bolest druge grupe</option>
+                            <option>Bolest trece grupe</option>
+                        </select>
+                    </div>
+                    <div *ngIf="!updateForm.controls['type'].valid && updateForm.controls['type'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateForm.valid" value="Izmijeni">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="illnessSymptoms" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40"> Simptomi:
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="symptoms">
+                <div class="row">
+                    <div class="col-9"></div>
+                    <button type="button" class="btn btn-primary" (click)="chooseIllnessSymptoms()" data-toggle="modal" data-target="#addSymptom" *ngIf="currentUser.role=='ADMIN'">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Dodaj simptom
+                    </button>
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th>Specifičan</th>
+                            <th *ngIf="currentUser.role=='ADMIN'">Operacije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let symptom of symptoms">
+                            <td>{{ symptom.helper }}</td>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" id="customCheck{{symptom.id}}" [checked]="symptom.isSpecific" disabled="disabled" type="checkbox">
+                                    <label class="custom-control-label" for="customCheck{{symptom.id}}"> {{symptom.isSpecificHelper}}</label>
+                                </div>
+                            </td>
+                            <td *ngIf="currentUser.role=='ADMIN'">
+                                <button class="btn btn-info btn-sm" (click)="updateSymptom(symptom)" data-toggle="modal" data-target="#updateSymptom">
+                                    <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmijeni
+                                </button>
+                                &nbsp;
+                                <button class="btn btn-danger btn-sm" (click)="deleteSymptom(symptom)">
+                                    <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>  
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addSymptom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="addSymptomForm" (ngSubmit)="addSymptom(addSymptomForm.value)">
+                    <div class="form-group">
+                        <label for="text">Naziv simptoma:</label>
+                        <select class="form-control" formControlName="symptom" (change)="onChanged()" id="selectedTerm">
+                            <option value="RUNNY_NOSE">Curenje iz nosa</option>
+                            <option value="SORE_THROAT">Bol u grlu</option>
+                            <option value="HEADACHE">Glavobolja</option>
+                            <option value="SNEEZE">Kijanje</option>
+                            <option value="COUGH">Kašalj</option>
+                            <option value="SHIVER">Drhtavica</option>
+                            <option value="TEMPERATURE">Temperatura</option>
+                            <option value="PAIN_TO_EARS">Bol koji se širi do ušiju</option>
+                            <option value="APPETITE_LOSS">Gubitak apetita</option>
+                            <option value="TIREDNESS">Umor</option>
+                            <option value="YELLOW_SECRETION_FROM_NOSE">Žuti sekret iz nosa</option>
+                            <option value="EYE_SWELLING">Oticanje oko očiju</option>
+                            <option value="HIGH_PRESSURE">Visok pritisak</option>
+                            <option value="OFTEN_URINATION">Često uriniranje</option>
+                            <option value="WEIGHT_LOSS">Gubitak tjelesne težine</option>
+                            <option value="FATIGUE">Zamor</option>
+                            <option value="NAUSEA_AND_VOMITTING">Mučnina i povraćanje</option>
+                            <option value="NOCTURIA">Nocturia</option>
+                            <option value="LEGS_AND_JOINTS_SWELLING">Otoci nogu i zglobova</option>
+                            <option value="CHOKING">Gušenje</option>
+                            <option value="CHEST_PAIN">Bol u grudima</option>
+                            <option value="DIARRHEA">Dijareja</option>
+                            <option value="SURGERY_RECOVERY">Pacijent se oporavlja od operacije</option>    
+                        </select>
+                    </div>
+                    <div *ngIf="addSymptomForm.controls['symptom'].touched">
+                        <span class="badge badge-danger" *ngIf="addSymptomForm.hasError('requiredSymptom')">{{ error }}</span>
+                    </div>
+                    <div class="form-group" id="tempValue" *ngIf="isSelected">
+                        <label for="fieldtemp" class="form-control-label">Izmjerena  temperatura:</label>
+                        <input type="text" formControlName="temp" placeholder="Izmjerena temperatura" class="form-control" id="fieldtemp" name="fieldtemp1" >
+                    </div>
+                    <div *ngIf="addSymptomForm.controls['temp'].touched">
+                        <span class="badge badge-danger" *ngIf="addSymptomForm.hasError('requiredNumber')">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="addSymptomForm.hasError('validateNumberData')">Unesena vrijednost mora biti broj!</span>
+                        <span class="badge badge-danger" *ngIf="addSymptomForm.hasError('validateScopeNumberData')">Broj bora biti u opsegu od 35-45!</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input id="isSpecific" type="checkbox" class="custom-control-input">
+                            <label class="custom-control-label" for="isSpecific">Specifičan</label>         
+                        </div>
+                    </div>      
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!addSymptomForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateSymptom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_disease}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateSymptomForm" (ngSubmit)="updateSymptomValue(updateSymptomForm.value)">
+                    <div class="form-group">
+                        <label for="title"> Naziv simptoma:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv simptoma">
+                    </div>
+                    <div *ngIf="updateSymptomForm.controls['title'].touched">
+                        <span class="badge badge-danger" *ngIf="updateSymptomForm.hasError('requiredTitle')">{{ error }}</span>
+                    </div>
+                    <div class="form-group" *ngIf="isSetTemperature">
+                        <label for="title"> Izmjerena temperatura:</label>
+                        <input type="text" class="form-control" formControlName="temperature" placeholder="Izmjerena temperatura">
+                    </div>
+                    <div *ngIf="updateSymptomForm.controls['temperature'].touched">
+                        <span class="badge badge-danger" *ngIf="updateSymptomForm.hasError('requiredTemperature')">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="updateSymptomForm.hasError('numberInvalid')">Unesena vrijednost mora biti broj!</span>
+                        <span class="badge badge-danger" *ngIf="updateSymptomForm.hasError('numberScopeInvalid')">Broj mora biti u opsegu od 35-45!</span>
+                    </div>        
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input id="isSpecificUpdate" type="checkbox" class="custom-control-input">
+                            <label class="custom-control-label" for="isSpecificUpdate">Specifičan</label>         
+                        </div>
+                    </div>    
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateSymptomForm.valid" value="Izmijeni">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" aria-hidden="true" id="error">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #cf3b1b">          
+                <h5 class="modal-title" style="color:white"><i class="fa fa-exclamation-triangle fa-lg" aria-hidden="true"></i> Greška</h5>
+            </div>
+            <div class="modal-body">
+                <p style="color:#cf3b1b">
+                    Uneseni naziv već postoji!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

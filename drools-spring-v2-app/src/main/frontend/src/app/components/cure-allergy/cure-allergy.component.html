@@ -1,0 +1,277 @@
+<div class="jumbotron">
+    <div class="row" *ngIf="visibleMedicamentAllergies">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <br>
+            <br>
+            <div class="form-group">
+                <div class=" form-group row">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label> 
+                        <h5>
+                            <img src="{{image_patient}}" height="40" width="40">
+                            <b>Pacijent:</b>
+                        </h5>
+                    </label>
+                    <div class="col-6"> 
+                        <select class="form-control" id="patientwithAllergyByMedicament" (change)="onChanged()">
+                            <option *ngFor="let patient of patients" value="{{patient.id}}">{{ patient.name }} {{ patient.surname }} {{patient.patientId}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label><h5><img src="{{image_medicine}}" height="40" width="40"><b> Alergičan na lijekove:</b></h5></label>
+                <div id="listOfMedicamentAllergies">
+                    <table class="table" id="table1">
+                        <thead>
+                            <tr>
+                                <th>Naziv lijeka:</th>
+                                <th>Operacija</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let medicamentAllergy of medicamentAllergiesByPatientId">
+                                <td>{{ medicamentAllergy.medicamentName }}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteMedicamentAllergy(medicamentAllergy)">
+                                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2">
+                    <button class="btn btn-primary btn-sm" (click)="previous()">
+                        <i class="fa fa-chevron-left fa-lg" aria-hidden="true"></i>
+                    </button>
+                    &nbsp;
+                    <button class="btn btn-primary btn-sm" (click)="next()">
+                        <i class="fa fa-chevron-right fa-lg" aria-hidden="true"></i>
+                    </button>                    
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary btn-sm" (click)="redirectToAdding()">
+                <i class="fa fa-plus" aria-hidden="true"></i> Alergija na lijek
+            </button>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="visibleIngredientAllergies">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <br><br>
+            <div class="form-group">
+                <div class="form-group row">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <label> 
+                        <h5>
+                            <img src="{{image_patient}}" height="40" width="40">
+                            <b>Pacijent:</b>
+                        </h5>
+                    </label>
+                    <div class="col-6"> 
+                        <select class="form-control" id="patientWithAllergyByIngredient" (change)="onChangedPatient()">
+                            <option *ngFor="let patient of patients" value="{{patient.id}}">{{patient.name}} {{patient.surname}} {{patient.patientId}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label><h5><img src="{{image_medicine}}" height="40" width="40"><b> Alergičan na sastojke lijekova:</b></h5></label>
+                <div id="listOfIngredientAllergies">
+                    <table class="table" id="table2">
+                        <thead>
+                            <tr>
+                                <th>Naziv sastojka:</th>
+                                <th>Naziv lijeka:</th>
+                                <th>Operacija</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let ingredientAllergy of ingredientAllergiesByPatientId">
+                                <td>{{ ingredientAllergy.ingredientName }}</td>
+                                <td>{{ ingredientAllergy.medicament.name}}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteIngredientAllergy(ingredientAllergy)">
+                                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-5"></div>
+                <div class="col-2">
+                    <button class="btn btn-primary btn-sm" (click)="next()">
+                        <i class="fa fa-chevron-left fa-lg" aria-hidden="true"></i>
+                    </button>
+                    &nbsp;
+                    <button class="btn btn-primary btn-sm" (click)="previous()">
+                        <i class="fa fa-chevron-right fa-lg" aria-hidden="true"></i>
+                    </button>                    
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+            <button class="btn btn-primary btn-sm" (click)="redirectToAdding()">
+                <i class="fa fa-plus" aria-hidden="true"></i> Alergija na lijek
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="addMedicamentOrIngredientAllergy">
+        <label><h5><img src="{{image_medicine}}" height="40" width="40"><b> Registrovani lijekovi:</b></h5></label>
+        <br>
+        <table class="table" id="allergy">
+            <thead>
+                <tr>
+                    <th>Naziv</th>
+                    <th>Tip</th>
+                    <th>Operacije</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let medicament of medicaments">
+                    <td>{{ medicament.name }}</td>
+                    <td>{{ medicament.helper }}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm" (click)="medicamentIngredients(medicament)" data-toggle="modal" data-target="#showIngredients">
+                            <i class="fa fa-list fa-lg" aria-hidden="true"></i> Sastav lijeka
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-warning btn-sm" (click)="medicamentAllergy(medicament)" data-toggle="modal" data-target="#showPatients">
+                            Alergičan
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="showPatients" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_patient}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="patients">
+                <div class="form-group">
+                    <label>Registrovani pacijenti:</label>
+                    <select class="form-control" id="choosePatientForMedicamentAllergy">
+                        <option *ngFor="let patient of patients" value="{{patient.id}}">
+                            {{ patient.name }} {{ patient.surname }} {{ patient.patientId }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Alergičan" (click)="patientMedicamentAllergy()">
+                &nbsp;
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showIngredients" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_medicine}}" height="40" width="40"> Sastav lijeka :
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ingredients-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th>Operacije</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let ingredient of ingredientsByMedicament">
+                            <td>{{ ingredient.name }}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" (click)="allergyIngredient(ingredient)" data-toggle="modal" data-target="#patientsWithAllergyByingredients">
+                                    Alergičan
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>  
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="patientsWithAllergyByingredients" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_patient}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="patients">
+                <div class="form-group">
+                    <label>Registrovani pacijenti:</label>
+                    <select class="form-control" id="choosePatientForIngredientAllergy">
+                        <option *ngFor="let patient of patients" value="{{patient.id}}">
+                            {{patient.name}} {{patient.surname}} {{patient.patientId}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Alergičan" (click)="patientIngredientAllergy()">
+                &nbsp;
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" aria-hidden="true" id="error">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #cf3b1b">          
+                <h5 class="modal-title" style="color:white"><i class="fa fa-exclamation-triangle fa-lg" aria-hidden="true"></i> Greška</h5>
+            </div>
+            <div class="modal-body">
+                <p style="color:#cf3b1b">
+                    {{errorMessage}}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

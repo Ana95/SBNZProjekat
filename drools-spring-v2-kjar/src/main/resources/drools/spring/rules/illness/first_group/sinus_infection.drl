@@ -1,0 +1,29 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Symptom;
+import drools.spring.example.facts.Illness;
+import drools.spring.example.facts.Diagnose;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+
+global Long pId;
+
+rule "Patient suffered from Cold/Fever in last 60 days"
+	salience 50
+	agenda-group "set-symptom-num"
+	no-loop 
+	lock-on-active true
+	when
+		$illness: Illness( name == "Sinusna infekcija" && $numOfSymptoms: symptomsFound && specificSymptomsFound == 0
+			&& $sym: symptomTermsFound )
+		$s: Symptom( Symptom.Term.SUFFERED_FROM_COLD_OR_FEVER_LAST_60_DAYS not memberOf $sym )
+		$d1: Diagnose( illnessName == "Prehlada" || illnessName == "Groznica" && patientId == pId && $d: date && 
+			$d > (addDays(-60)) )
+	then
+		$illness.setSymptomsFound($numOfSymptoms + 1);
+		$illness.setSpecificSymptomsFound(1);
+		$illness.getSymptomTermsFound().add(Symptom.Term.SUFFERED_FROM_COLD_OR_FEVER_LAST_60_DAYS);
+		update($illness);
+end

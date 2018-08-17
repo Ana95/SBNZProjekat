@@ -7,6 +7,7 @@ import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import drools.spring.example.facts.Illness;
 import drools.spring.example.facts.Symptom;
 import drools.spring.example.repositories.SymptomRepository;
 
@@ -15,13 +16,6 @@ public class SymptomServiceImpl implements SymptomService{
 	
 	@Autowired
 	private SymptomRepository symptomRepository;
-	
-	private final KieContainer kieContainer;
-	
-    @Autowired
-    public SymptomServiceImpl(KieContainer kieContainer) {
-        this.kieContainer = kieContainer;
-    }
 
 	@Override
 	public Collection<Symptom> findAll() {
@@ -38,11 +32,6 @@ public class SymptomServiceImpl implements SymptomService{
 	@Override
 	public Symptom save(Symptom symptom) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.println(symptom.getTitle());
-		KieSession kieSession = kieContainer.newKieSession();
-		kieSession.insert(symptom);
-	    kieSession.fireAllRules();
-	    kieSession.dispose();
 		return symptomRepository.save(symptom);
 	}
 
@@ -50,6 +39,24 @@ public class SymptomServiceImpl implements SymptomService{
 	public void delete(Long id) throws Exception {
 		// TODO Auto-generated method stub
 		symptomRepository.delete(id);
+	}
+
+	@Override
+	public Collection<Symptom> findByIllness(Illness illness) {
+		// TODO Auto-generated method stub
+		return symptomRepository.findByIllness(illness);
+	}
+
+	@Override
+	public Collection<Symptom> findByIllnessOrderByIsSpecificDesc(Illness illness) {
+		// TODO Auto-generated method stub
+		return symptomRepository.findByIllnessOrderByIsSpecificDesc(illness);
+	}
+
+	@Override
+	public void delete(Collection<Symptom> symptoms) throws Exception {
+		// TODO Auto-generated method stub
+		symptomRepository.delete(symptoms);
 	}
 	
 }

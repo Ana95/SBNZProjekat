@@ -6,15 +6,18 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 })
 export class LoginService {
 
-  readonly URL : string = 'http://localhost:8080/login';
-
   constructor(private http : HttpClient) { 
 
   }
 
-  getRole(username, password){
+  login(username, password){
     let param = new HttpParams().set('username', username).set('password', password);
-    return this.http.get<any>(this.URL, { params : param })
-
+    return this.http.get<any>("/api/login", { params : param })
   }
+
+  logout(){
+    localStorage.removeItem("currentUser");
+    return this.http.post("/api/logout", {}, {responseType: 'text'});
+  }
+
 }

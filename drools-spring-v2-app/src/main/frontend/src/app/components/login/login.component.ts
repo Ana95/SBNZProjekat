@@ -6,6 +6,7 @@ import { User } from '../../model/user';
 import { UserService } from '../../services/user.service';
 import { ROLE } from '../../model/role.enum';
 import { Router } from '@angular/router';
+declare var $ : any;
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
   error:string ="Polje je obavezno!";
   user : User;
 
-  constructor(private fb:FormBuilder, private loginService : LoginService, private router : Router, private userService : UserService) {
+  constructor(private fb:FormBuilder, private loginService : LoginService, private router : Router) {
     this.loginForm = fb.group({
       'username':[null, Validators.required],
       'password': [null, Validators.required]
@@ -26,27 +27,21 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    
   }
 
-  login(data : any){
-    let username = data.username;
-    let password = data.password;
-    this.userService.getUsers().subscribe(
-      res => {
-        let user:User;
-        for(let i of res){
-          if(i.username == username && i.password == password){
-            user = i;
-          }
-        }
-        if(user.role.toString() == ROLE[ROLE.ADMIN]){
-          this.router.navigate(['/administrator']);
+  login(post){
+    this.loginService.login(post.username, post.password).subscribe(
+      (res) =>{
+        this.user = res;
+        localStorage.setItem("currentUser", JSON.stringify(this.user));
+        console.log(this.user.role);
+        if(this.user.role.toString() == ROLE[ROLE.ADMIN]){
+          this.router.navigate(['../administrator']);
         }else{
-          console.log(user.role);
-          this.router.navigate(['/doctor']);
+          this.router.navigate(['../doctor']);
         }
-      }
-    ), err => this.errorHandle(err);
+      },(err) => this.errorHandle(err));
   }
 
   errorHandle(err: HttpErrorResponse){
@@ -56,6 +51,7 @@ export class LoginComponent implements OnInit {
       console.log("Server-side Error occured!");
       console.log(err.message);
     }
+    $('#error').modal("show");
   }
 
 }

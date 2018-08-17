@@ -1,20 +1,472 @@
 <div class="jumbotron">
-    <form [formGroup]="rForm" (ngSubmit)="getSymptoms(rForm.value)">
+    <div *ngIf="diagnosisTable">
+        <div class="row">
+            <div class="col-md-10"></div>
+            <button type="button" class="btn btn-primary" (click)="addDiagnosis()" *ngIf="currentUser.role == 'DOCTOR'">
+                <i class="fa fa-plus" aria-hidden="true"></i> Dijagnoza
+            </button>
+        </div>
+        <br>
         <div class="form-group">
-            <label>Simptomi:</label>
-            <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
-            </ss-multiselect-dropdown>
+            <div class="form-group row">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <label> 
+                    <h5>
+                        <img src="{{image_patient}}" height="40" width="40">
+                        <b>Pacijent:</b>
+                    </h5>
+                </label>
+                <div class="col-6"> 
+                    <select class="form-control" id="patientWithDiagnosis" (change)="onChangedPatientWithDiagnosis()">
+                        <option value="{{patient.id}}" *ngFor="let patient of patients">{{ patient.name }} {{ patient.surname }} {{ patient.patientId}}</option>
+                    </select>
+                </div>
+            </div>
         </div>
-        <div *ngIf="!rForm.controls['optionsModel'].valid && rForm.controls['optionsModel'].touched">
-            <span class="badge badge-danger">{{ error }}</span>
+        <div class="form-group">
+            <label><h5><img src="{{image_illness}}" height="40" width="40"><b> Dijagnostifikovane bolesti:</b></h5></label>
+            <table class="table" id="illnesses">
+                <tr>
+                    <th>Bolest</th>
+                    <th>Doktor</th>
+                    <th>Datum</th>
+                    <th>Operacije</th>
+                </tr>
+                <tr *ngFor="let diagnose of diagnosesByPatientId">
+                    <td>{{ diagnose.illnessName }}</td>
+                    <td>{{ diagnose.doctorName }}</td>
+                    <td>{{ diagnose.date | date:'HH:mm dd.MM.yyyy.' }}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm" (click)="showMedicaments(diagnose)" data-toggle="modal" data-target="#showMedicaments">
+                            <i class="fa fa-list fa-lg" aria-hidden="true"></i> Prepisani lijekovi
+                        </button>
+                        &nbsp;
+                        <button class="btn btn-danger btn-sm" (click)="deleteDiagnosis(diagnose)" *ngIf="currentUser.role == 'DOCTOR'">
+                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="modal-footer">
-            <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Prikazi">
+    </div>
+
+    <div class="modal fade" id="showMedicaments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">          
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <img src="{{image_medicine}}" height="50" width="50"> Prepisani lijekovi:
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="setOfMedicaments">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Naziv</th>
+                                <th>Tip</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let dm of diagnoseMedicaments">
+                                <td>{{ dm.medicamentName }}</td>
+                                <td>{{ dm.medicamentCategory }}</td>       
+                            </tr>
+                        </tbody>
+                    </table> 
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+                </div>  
+            </div>
         </div>
-    </form>
-    <br><br>
-    <div class="form-inline" >
-        <label><b> Rezultat rezonera : </b></label>
-        <h4 *ngIf="disease != undefined"> {{disease.title}} </h4>
+    </div>
+
+    <div class="row" *ngIf="setPatientDiagnosis">
+        <div class="col-1"></div>
+        <div class="col-11">
+            <form [formGroup]="rForm" (ngSubmit)="setDiagnosis(rForm.value)">
+                <div class="form-group">
+                    <label>Pacijent:</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Ime i prezime pacijenta" formControlName="patient">
+                            <div *ngIf="rForm.controls['patient'].touched">
+                                <span class="badge badge-danger" *ngIf="rForm.hasError('requiredPatient')">{{ error }}</span>
+                            </div>
+                        </div>   
+                        <div class="col">
+                            <button class="btn btn-success" data-toggle="modal" data-target="#choosePatient" (click)="listOfPatients()">
+                                Izaberi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label>Simptomi:</label>
+                    <div class="row">
+                        <div class="col">
+                            <select class="form-control" id="chooseSymptom" formControlName="symptom" (change)="onChangedTerm()">                            
+                                <option value="RUNNY_NOSE">Curenje iz nosa</option>
+                                <option value="SORE_THROAT">Bol u grlu</option>
+                                <option value="HEADACHE">Glavobolja</option>
+                                <option value="SNEEZE">Kijanje</option>
+                                <option value="COUGH">Kašalj</option>
+                                <option value="SHIVER">Drhtavica</option>
+                                <option value="TEMPERATURE">Temperatura</option>
+                                <option value="PAIN_TO_EARS">Bol koji se širi do ušiju</option>
+                                <option value="APPETITE_LOSS">Gubitak apetita</option>
+                                <option value="TIREDNESS">Umor</option>
+                                <option value="YELLOW_SECRETION_FROM_NOSE">Žuti sekret iz nosa</option>
+                                <option value="EYE_SWELLING">Oticanje oko očiju</option>
+                                <option value="HIGH_PRESSURE">Visok pritisak</option>
+                                <option value="OFTEN_URINATION">Često uriniranje</option>
+                                <option value="WEIGHT_LOSS">Gubitak tjelesne težine</option>
+                                <option value="FATIGUE">Zamor</option>
+                                <option value="NAUSEA_AND_VOMITTING">Mučnina i povraćanje</option>
+                                <option value="NOCTURIA">Nocturia</option>
+                                <option value="LEGS_AND_JOINTS_SWELLING">Otoci nogu i zglobova</option>
+                                <option value="CHOKING">Gušenje</option>
+                                <option value="CHEST_PAIN">Bol u grudima</option>
+                                <option value="DIARRHEA">Dijareja</option>
+                                <option value="SURGERY_RECOVERY">Pacijent se oporavlja od operacije</option>
+                            </select>
+                            <div *ngIf="rForm.controls['symptom'].touched">
+                                <span class="badge badge-danger" *ngIf="rForm.hasError('requiredSymptom')">{{ error }}</span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-success" (click)="chooseSymptom()" [disabled]="!rForm.valid">
+                                <i class="fa fa-plus" aria-hidden="true"></i> Dodaj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="tempValue" *ngIf="isSelectedTerm">
+                    <label for="fieldtemp" class="form-control-label">Izmjerena  temperatura:</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="text" formControlName="temp" placeholder="Izmjerena temperatura" class="form-control" id="fieldtemp" name="fieldtemp1">
+                            <div *ngIf="rForm.controls['temp'].touched">
+                                <span class="badge badge-danger" *ngIf="rForm.hasError('requiredTemp')">{{ error }}</span>
+                                <span class="badge badge-danger" *ngIf="rForm.hasError('tempInvalid')">Unesena vrijednost mora biti broj!</span>
+                                <span class="badge badge-danger" *ngIf="rForm.hasError('tempScopeInvalid')">Broj mora biti u opsegu od 35-45!</span>
+                            </div>
+                        </div>
+                        <div class="col"></div>
+                    </div>
+                </div>
+                <div class="col-6" id="symptoms">
+                    <table class="table">
+                        <tbody>
+                            <tr *ngFor="let symptom of symptoms">
+                                <td>{{ symptom }}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteSymptom(symptom)">
+                                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                    </button>
+                                </td>
+                            </tr>
+                    </table>
+                </div>
+                <br><br><br><br>
+                <div class="row">
+                    <div class="col"></div><div class="col"></div><div class="col"></div>
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm" (click)="systemDiagnosis()" [disabled]="!rForm.valid" data-toggle="modal" data-target="#systemDiagnosis">
+                            Sistemski uspostaviti dijagnozu
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm" (click)="personalDiagnosis()" [disabled]="!rForm.valid" data-toggle="modal" data-target="#personalDiagnosis">
+                            Lično uspostaviti dijagnozu
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-primary btn-sm" (click)="illnessesBySymptoms()" [disabled]="!rForm.valid" data-toggle="modal" data-target="#similarIllness">
+                            Bolesti sa sličnim simptomima
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="choosePatient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_patient}}" height="40" width="40"> Registrovani pacijenti:
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="patients">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" *ngFor="let patient of patients">
+                        <input name="listOfPatients" value="{{patient.id}}" type="radio" [(ngModel)]="radioSelectedPatient">
+                        &nbsp;
+                        <label class="form-check-label">
+                            {{ patient.name }} {{ patient.surname }} {{ patient.patientId }}
+                        </label>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Izaberi"(click)="choosePatient()">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="systemDiagnosis" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_illness}}" height="50" width="50">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th>Kategorija</th>
+                            <th>Broj simptoma</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let illness of getOneIllness">
+                            <td>{{illness.name}}</td>
+                            <td>{{illness.illnessTypeHelper}}</td>
+                            <td>{{illness.symptomsFound}}</td>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input #chooseDisease id="chooseDisease" type="checkbox" class="custom-control-input" (click)="systemReturnedIllness(illness)" [checked]="isChecked" (change)="onChanged(chooseDisease.checked)">
+                                    <label class="custom-control-label" for="chooseDisease">Izaberi</label>         
+                                </div>
+                            </td>        
+                        </tr>
+                    </tbody>
+                </table> 
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Prepiši lijek" [disabled]="!isChecked" (click)="prescribeMedicament()" data-toggle="modal" data-target="#prescribeMedicament">
+                &nbsp;
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="personalDiagnosis" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_illness}}" height="50" width="50">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Bolest:</label>
+                    <div class="row">
+                        <div class="col">
+                            <select class="form-control" id="selectIllness">
+                                <option *ngFor="let illness of illnesses" value="{{illness.id}}">{{ illness.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-success" (click)="sortedSymptomsByIllness()" data-toggle="modal" data-target="#symptomsProperties">
+                                <i class="fa fa-list" aria-hidden="true"></i> Simptomi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Prepiši lijek" (click)="prescribeMedicamentPersonalDiagnosis()" data-toggle="modal" data-target="#prescribeMedicament">
+                    &nbsp;
+                    <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="symptomsProperties" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_illness}}" height="40" width="40"> Prehlada
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="symptomsAttributes">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th>Specifičan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let symptom of symptomsByIllness">
+                            <td>{{ symptom.helper }}</td>
+                            <td>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" id="customCheck{{symptom.id}}" disabled [checked]="symptom.isSpecific" type="checkbox">
+                                    <label class="custom-control-label" for="customCheck{{symptom.id}}">{{ symptom.isSpecificHelper }}</label>
+                                </div>
+                            </td>               
+                        </tr>
+                    </tbody>
+                </table>
+            </div>  
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="similarIllness" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_illness}}" height="50" width="50">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="showSimilarIllness">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th>Kategorija</th>
+                            <th>Broj simptoma</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let illness of getAllIllness">
+                            <td>{{illness.name}}</td>
+                            <td>{{illness.illnessTypeHelper}}</td>
+                            <td>{{illness.symptomsFound}}</td>
+                            <td>
+                                <input name="chooseIllness" value="{{illness.id}}" type="radio" [(ngModel)]="radioSelectedIllness">
+                                &nbsp;
+                                <label class="form-check-label">
+                                    Izaberi    
+                                </label>
+                            </td>        
+                        </tr>
+                    </tbody>
+                </table> 
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Prepiši lijek" (click)="prescribeMedicamentSimilarIllness()" data-toggle="modal" data-target="#prescribeMedicament">
+                &nbsp;
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="prescribeMedicament" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_illness}}" height="40" width="40"> Prehlada
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="medicaments">
+                <div class="form-group">
+                    <label>Lijek:</label>
+                    <div class="row">
+                        <div class="col-9">
+                            <select class="form-control" id="selectMedicament">
+                                <option *ngFor="let medicament of medicaments" value="{{medicament.id}}">{{ medicament.name }}</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-success" (click)="addMedicament()">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div id="length">
+                    <table class="table">
+                        <thead>
+                            <th>Naziv</th>
+                            <th>Tip</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let medicament of chooseMedicaments">
+                                <td>{{ medicament.name }}</td>
+                                <td>{{ medicament.helper }}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" (click)="deleteMedicament(medicament)">
+                                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                    </button>
+                                </td>                
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>  
+            <div class="modal-footer">
+                <button class="btn btn-primary" value="Prepiši" (click)="diagnosisSeted()">
+                    <a *ngIf="chooseMedicaments.length != 0"> Prepiši</a>
+                    <a *ngIf="chooseMedicaments.length == 0"> Bez upotrebe</a>
+                </button>
+                &nbsp;
+                <input type="submit" class="btn btn-secondary" data-dismiss="modal" value="Zatvori">
+            </div>  
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" aria-hidden="true" id="error">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #cf3b1b">          
+                <h5 class="modal-title" style="color:white"><i class="fa fa-exclamation-triangle fa-lg" aria-hidden="true"></i> Greška</h5>
+            </div>
+            <div class="modal-body">
+                <p style="color:#cf3b1b">
+                    {{ errorMessage }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>

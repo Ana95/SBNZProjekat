@@ -16,13 +16,6 @@ public class PatientServiceImpl implements PatientService {
 	@Autowired
 	private PatientRepository patientRepository;
 	
-	private final KieContainer kieContainer;
-	
-    @Autowired
-    public PatientServiceImpl(KieContainer kieContainer) {
-        this.kieContainer = kieContainer;
-    }
-
 	@Override
 	public Collection<Patient> findAll() {
 		// TODO Auto-generated method stub
@@ -38,10 +31,6 @@ public class PatientServiceImpl implements PatientService {
 	@Override
 	public Patient save(Patient patient) throws Exception {
 		// TODO Auto-generated method stub
-		KieSession kieSession = kieContainer.newKieSession();
-		kieSession.insert(patient);
-	    kieSession.fireAllRules();
-	    kieSession.dispose();
 		return patientRepository.save(patient);
 	}
 

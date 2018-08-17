@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { IMultiSelectOption } from 'angular-2-dropdown-multiselect';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { MedicineComponent } from '../../model/medicine-component';
-import { Medicine } from '../../model/medicine';
-import { MEDICINETYPE } from '../../model/medicinetype.enum';
-import { ComponentService } from '../../services/component.service';
-import { MedicineService } from '../../services/medicine.service';
+import { Ingredient } from '../../model/ingredient';
+import { Medicament } from '../../model/medicament';
+import { User } from '../../model/user';
+import { MEDICAMENTTYPE } from '../../model/medicamenttype.enum';
+import {  IngredientService } from '../../services/ingredient.service';
+import { MedicamentService } from '../../services/medicament.service';
 declare var $:any;
 
 @Component({
@@ -16,154 +16,180 @@ declare var $:any;
 })
 export class CureComponent implements OnInit {
 
-  myOptions: IMultiSelectOption[];
   image_medicine : string = "assets/img/pillImage.png";
-  addMedicineForm : FormGroup;
-  updateMedicineForm : FormGroup;
-  post:any;
+  addMedicamentForm : FormGroup;
+  updateMedicamentForm : FormGroup;
+  addIngredientForm : FormGroup;
+  updateIngredientForm : FormGroup;
   error:string ="Polje je obavezno!";
-  medicine : Medicine;
-  medicineForUpdate : Medicine;
-  medicines : Medicine[];
+  medicament : Medicament;
+  currentUser: User = JSON.parse(localStorage.getItem("currentUser"));
+  medicamentForUpdate : Medicament;
+  medicaments : Medicament[];
+  medicamentIngredients : Ingredient[];
+  ingredientForUpdate : Ingredient;
 
-  constructor(private fb:FormBuilder, private componentService : ComponentService,private medicineService : MedicineService) {
-    this.addMedicineForm = fb.group({
+  constructor(private fb:FormBuilder, private ingredientService : IngredientService, private medicamentService : MedicamentService) {
+    this.addMedicamentForm = fb.group({
       'title':[null, Validators.required],
-      'type': [null, Validators.required],
-      'optionsModel' : [null, Validators.required]
+      'type': [null, Validators.required]
     });
-    this.updateMedicineForm = fb.group({
+    this.updateMedicamentForm = fb.group({
       'title':[null, Validators.required],
-      'type': [null, Validators.required],
-      'optionsModel' : [null, Validators.required]
+      'type': [null, Validators.required]
+    });
+    this.updateIngredientForm = fb.group({
+      'title':[null, Validators.required]
+    });
+    this.addIngredientForm = fb.group({
+      'title':[null, Validators.required]
     });
   }
 
   ngOnInit() {
-    this.componentService.getComponents().subscribe(
-      res =>{
-        this.myOptions = [];
-        for(let i of res){
-          this.myOptions.push(
-            {
-              id : i.id,
-              name : i.title
-            }
-          );
-        }
-        this.medicineService.getMedicines().subscribe(
-          data =>{
-            this.medicines = data;
-            for(let i of this.medicines){
-              if(i.type.toString() == MEDICINETYPE[MEDICINETYPE.ANTIBIOTIC]){
-                i.medicineType = "Antibiotik";
-              }else if(i.type.toString() == MEDICINETYPE[MEDICINETYPE.ANALGESIC]){
-                i.medicineType = "Analgetik";
-              }else{
-                i.medicineType = "Drugi"; 
-              }
-            }
+    this.medicamentService.getMedicaments().subscribe(
+      res => {
+        this.medicaments = res;
+        for(let medicament of this.medicaments){
+          if(medicament.category.toString() == "ANTIBIOTICS"){
+            medicament.helper = "Antibiotik";
+          }else if(medicament.category.toString() == "ANALGESICS"){
+            medicament.helper = "Analgetik";
+          }else{
+            medicament.helper = "Drugi";
           }
-        ), err => this.errorHandle(err);
-      }
-    ), err => this.errorHandle(err);
+        }
+      },
+      err => this.errorHandle(err));
   }
 
-  addMedicine(post){
-    let title = post.title;
-    let medicineType = post.type;
-    let type: MEDICINETYPE;
+  addMedicament(data){
+    let title = data.title;
+    let medicineType = data.type;
+    let type: MEDICAMENTTYPE;
     if(medicineType == "Antibiotik"){
-      type = MEDICINETYPE.ANTIBIOTIC;
+      type = MEDICAMENTTYPE.ANTIBIOTICS;
     }else if(medicineType == "Analgetik"){
-      type = MEDICINETYPE.ANALGESIC;
+      type = MEDICAMENTTYPE.ANALGESICS;
     }else{
-      type = MEDICINETYPE.OTHER;
+      type = MEDICAMENTTYPE.OTHER;
     }
-    let data = post.optionsModel;
-    let components : MedicineComponent[] = [];
-    this.componentService.getComponents().subscribe(
+    let medicament = new Medicament(title, type, null);
+    let foundMedicament : boolean = false;
+
+    for(let m of this.medicaments){
+      if(m.name.toLocaleLowerCase() == data.title.toLocaleLowerCase()){
+        foundMedicament = true;
+      }
+    }
+
+    if(!foundMedicament){
+      this.medicamentService.addMedicament(medicament).subscribe(
+        res => {
+          this.medicament = res;
+          this.medicament.helper = medicineType;
+          this.medicaments.push(this.medicament);
+          $('#addMedicament').modal("toggle");
+        }, err => this.errorHandle(err)
+      );
+    }else{
+      $("#error").modal("show");
+    }
+  }
+
+  deleteMedicament(medicament : Medicament){
+    this.medicamentService.deleteMedicamentById(medicament.id).subscribe(
+      res => {
+        for(let i in this.medicaments){
+          if(this.medicaments[i].id == medicament.id){
+            this.medicaments.splice(Number(i), 1);
+          }
+        }
+      }, err => this.errorHandle(err));
+  }
+
+  updateMedicament(medicament : Medicament){
+    this.medicamentForUpdate = medicament;
+    this.updateMedicamentForm.controls['title'].setValue(medicament.name);
+    this.updateMedicamentForm.controls['type'].setValue(medicament.helper);
+  }
+
+  updateMedicamentValue(data){
+    this.medicamentForUpdate.name = data.title;
+    this.medicamentForUpdate.helper = data.type;
+    if(this.medicamentForUpdate.category.toString() == "Antibiotik"){
+      this.medicamentForUpdate.category = MEDICAMENTTYPE.ANTIBIOTICS;
+    }else if(this.medicamentForUpdate.category.toString() == "Analgetik"){
+      this.medicamentForUpdate.category = MEDICAMENTTYPE.ANALGESICS;
+    }else{
+      this.medicamentForUpdate.category = MEDICAMENTTYPE.OTHER;
+    }
+    this.medicamentService.updateMedicament(this.medicamentForUpdate).subscribe(
+      res => {},
+      err => this.errorHandle(err));
+    $('#updateMedicament').modal("toggle");
+  }
+
+  showIngredients(medicament){
+    $('#ingredients').modal("show");
+    this.medicament = medicament;
+    this.ingredientService.getIngredientsByMedicament(medicament.id).subscribe(
       res =>{
-        for(let i of data){
-          for(let j of res){
-            if(i == j.id){
-              components.push(j);
-            }
-          }
-        }
-        let newMedicine = new Medicine(title, components, type);
-        this.medicineService.addMedicine(newMedicine).subscribe(
-          rl =>{
-            this.medicine = rl;
-            console.log(this.medicine.type);
-            if(this.medicine.type.toString() == MEDICINETYPE[MEDICINETYPE.ANTIBIOTIC]){
-              this.medicine.medicineType = "Antibiotik";
-            }else if(this.medicine.type.toString() == MEDICINETYPE[MEDICINETYPE.ANALGESIC]){
-              this.medicine.medicineType = "Analgetik";
-            }else{
-              this.medicine.medicineType = "Drugi";
-            }
-            this.medicines.push(this.medicine);
-          }
-        ), err => this.errorHandle(err);
-      }
-    ), err => this.errorHandle(err);
-    $('#addMedicine').modal("toggle");
+        this.medicament.ingredients = res;
+        this.medicamentIngredients = this.medicament.ingredients;
+      },
+      err => this.errorHandle(err));
   }
 
-  deleteMedicine(medicine : Medicine){
-    this.medicineService.deleteMedicineById(medicine.id).subscribe(
-      res => {
-        for(let i in this.medicines){
-          if(this.medicines[i].id == medicine.id){
-            this.medicines.splice(Number(i), 1);
-          }
-        }
-      }
-    ), err => this.errorHandle(err);
-  }
+  addIngredient(data){
+    let ingredient = new Ingredient(data.title, this.medicament);
+    let foundIngredient : boolean = false;
 
-  updateMedicine(medicine : Medicine){
-    this.medicineForUpdate = medicine;
-    let selecOptions:number[] = [];
-    for(let i of medicine.components){
-      selecOptions.push(i.id);
+    for(let mi of this.medicamentIngredients){
+      if(mi.name.toLocaleLowerCase() == data.title.toLocaleLowerCase()){
+        foundIngredient = true;
+      }
     }
-    this.updateMedicineForm.controls['title'].setValue(medicine.title);
-    this.updateMedicineForm.controls['optionsModel'].setValue(selecOptions);
-    this.updateMedicineForm.controls['type'].setValue(medicine.medicineType);
-  }
 
-  updateMedicineValue(post){
-    this.medicineForUpdate.title = post.title;
-    this.medicineForUpdate.medicineType = post.type;
-    if(this.medicineForUpdate.medicineType == "Antibiotik"){
-      this.medicineForUpdate.type = MEDICINETYPE.ANTIBIOTIC;
-    }else if(this.medicineForUpdate.medicineType == "Analgetik"){
-      this.medicineForUpdate.type = MEDICINETYPE.ANALGESIC;
+    if(!foundIngredient){
+      this.ingredientService.addIngredient(ingredient).subscribe(
+        res => {
+          this.medicamentIngredients.push(res);
+          $('#addIngredient').modal("toggle");
+        },
+        err => this.errorHandle(err)
+      );
     }else{
-      this.medicineForUpdate.type = MEDICINETYPE.OTHER;
+      $("#error").modal("show");
     }
-    let data = post.optionsModel;
-    let components : MedicineComponent[] = [];
-    this.componentService.getComponents().subscribe(
-      res => {
-        for(let i of data){
-          for(let j of res){
-            if(i == j.id){
-              components.push(j);
-            }
+      
+  }
+
+  updateIngredient(ingredient : Ingredient){
+    this.ingredientForUpdate = ingredient;
+    this.updateIngredientForm.controls['title'].setValue(ingredient.name);
+  }
+
+  updateIngredientValue(data){
+    console.log(this.ingredientForUpdate.id);
+    this.ingredientForUpdate.name = data.title;
+    this.ingredientService.updateIngredient(this.ingredientForUpdate).subscribe(
+      res => {},
+      err => this.errorHandle(err));
+      $('#updateIngredient').modal("toggle");
+  }
+
+  deleteIngredient(ingredientId : number){
+    console.log(ingredientId);
+    this.ingredientService.deleteIngredient(ingredientId).subscribe(
+      res =>{
+        console.log(res);
+        for(let i in this.medicamentIngredients){
+          if(this.medicamentIngredients[i].id == ingredientId){
+            this.medicamentIngredients.splice(Number(i), 1);
           }
         }
-        this.medicineForUpdate.components = components;
-        this.medicineService.updateMedicine(this.medicineForUpdate).subscribe(
-          rl =>{
-
-          }
-        ), err => this.errorHandle(err);
-      }
-    ), err => this.errorHandle(err);
-    $('#updateMedicine').modal("toggle");
+      }, err => this.errorHandle(err));
   }
 
   errorHandle(err: HttpErrorResponse){

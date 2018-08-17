@@ -1,0 +1,24 @@
+.jumbotron{
+    overflow-y: scroll;
+    height: 550px;
+}
+
+#listOfMedicamentAllergies{
+    overflow-y: scroll;
+    height: 170px;
+}
+
+#listOfIngredientAllergies{
+    overflow-y: scroll;
+    height: 170px;
+}
+
+#table1 th, 
+#table1 td {
+    border: 1px solid rgb(16, 6, 56);
+}
+
+#table2 th, 
+#table2 td {
+    border: 1px solid rgb(16, 6, 56);
+}

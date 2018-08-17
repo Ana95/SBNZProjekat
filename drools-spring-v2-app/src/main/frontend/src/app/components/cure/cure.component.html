@@ -1,41 +1,38 @@
 <div class="jumbotron">
     <div class="row">
-        <div class="col-md-11"></div>
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#addMedicine">
-            <i class="fa fa-plus" aria-hidden="true"></i>
+        <div class="col-md-10"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addMedicament" *ngIf="currentUser.role == 'ADMIN'">
+            <i class="fa fa-plus" aria-hidden="true"></i> Dodaj lijek
         </button>
     </div>
     <br>
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <div class="alert alert-info" role="alert" *ngFor="let medicine of medicines">
-                <h3 class="alert-heading"><img src="{{image_medicine}}" height="40" width="40"> {{medicine.title}} </h3>
-                <h5><b>Sastojci :</b> </h5>
-                <div class="jumbotron" id="medicine">
-                    <p style="color:gray;font-size:15px;" *ngFor="let component of medicine.components"> {{component.title}} </p>
-                </div>
-                <h5><b>Tip lijeka :</b> {{medicine.medicineType}}</h5>
-                <hr>
-                <div class="row">
-                    <div class="col-8"></div>
-                    <div class="col-4">
-                        <button class="btn btn-danger btn-sm" (click)="deleteMedicine(medicine)">
-                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
-                        </button>
-                        &nbsp;
-                        <button class="btn btn-danger btn-sm" (click)="updateMedicine(medicine)" data-toggle="modal" data-target="#updateMedicine">
-                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2"></div>
-    </div>
+    <table class="table" id="medicament">
+        <tr>
+            <th>Naziv</th>
+            <th>Tip</th>
+            <th>Operacije</th>
+        </tr>
+        <tr *ngFor="let medicament of medicaments">
+            <td>{{ medicament.name }}</td>
+            <td>{{ medicament.helper }}</td>
+            <td>
+                <button class="btn btn-info btn-sm" (click)="updateMedicament(medicament)" data-toggle="modal" data-target="#updateMedicament" *ngIf="currentUser.role == 'ADMIN'">
+                    <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmijeni
+                </button>
+                &nbsp;
+                <button class="btn btn-danger btn-sm" (click)="deleteMedicament(medicament)" *ngIf="currentUser.role == 'ADMIN'">
+                    <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                </button>
+                &nbsp;
+                <button class="btn btn-success btn-sm" (click)="showIngredients(medicament)">
+                    <i class="fa fa-list fa-lg" aria-hidden="true"></i> Sastav lijeka
+                </button>
+            </td>
+        </tr>
+    </table>
 </div>
 
-<div class="modal fade" id="addMedicine" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addMedicament" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">          
@@ -47,35 +44,33 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form [formGroup]="addMedicineForm" (ngSubmit)="addMedicine(addMedicineForm.value)">
+                <form [formGroup]="addMedicamentForm" (ngSubmit)="addMedicament(addMedicamentForm.value)">
                     <div class="form-group">
                         <label for="title">Naziv lijeka:</label>
-                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv lijeka">
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv lijeka" [ngClass]="{
+                            'is-valid' : addMedicamentForm.controls['title'].valid && addMedicamentForm.controls['title'].touched,
+                            'is-invalid' : addMedicamentForm.controls['title'].invalid && addMedicamentForm.controls['title'].touched
+                        }">
                     </div>
-                    <div *ngIf="!addMedicineForm.controls['title'].valid && addMedicineForm.controls['title'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Sastojci:</label>
-                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
-                        </ss-multiselect-dropdown>
-                    </div>
-                    <div *ngIf="!addMedicineForm.controls['optionsModel'].valid && addMedicineForm.controls['optionsModel'].touched">
+                    <div *ngIf="!addMedicamentForm.controls['title'].valid && addMedicamentForm.controls['title'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>          
                     <div class="form-group">
                         <label for="text">Tip lijeka:</label>
-                        <select class="form-control" formControlName="type">
+                        <select class="form-control" formControlName="type" [ngClass]="{
+                            'is-valid' : addMedicamentForm.controls['type'].valid && addMedicamentForm.controls['type'].touched,
+                            'is-invalid' : addMedicamentForm.controls['type'].invalid && addMedicamentForm.controls['type'].touched
+                        }">
                             <option>Antibiotik</option>
                             <option>Analgetik</option>
                             <option>Drugi</option>
                         </select>
                     </div>
-                    <div *ngIf="!addMedicineForm.controls['type'].valid && addMedicineForm.controls['type'].touched">
+                    <div *ngIf="!addMedicamentForm.controls['type'].valid && addMedicamentForm.controls['type'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-primary" [disabled]="!addMedicineForm.valid" value="Dodaj">
+                        <input type="submit" class="btn btn-primary" [disabled]="!addMedicamentForm.valid" value="Dodaj">
                     </div>
                 </form>  
             </div>
@@ -83,7 +78,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="updateMedicine" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateMedicament" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">          
@@ -95,40 +90,167 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form [formGroup]="updateMedicineForm" (ngSubmit)="updateMedicineValue(updateMedicineForm.value)">
+                <form [formGroup]="updateMedicamentForm" (ngSubmit)="updateMedicamentValue(updateMedicamentForm.value)">
                     <div class="form-group">
                         <label for="title">Naziv bolesti:</label>
-                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti">
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv bolesti" [ngClass]="{
+                            'is-valid' : updateMedicamentForm.controls['title'].valid && updateMedicamentForm.controls['title'].touched,
+                            'is-invalid' : updateMedicamentForm.controls['title'].invalid && updateMedicamentForm.controls['title'].touched
+                        }">
                     </div>
-                    <div *ngIf="!updateMedicineForm.controls['title'].valid && updateMedicineForm.controls['title'].touched">
+                    <div *ngIf="!updateMedicamentForm.controls['title'].valid && updateMedicamentForm.controls['title'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Simptomi:</label>
-                        <ss-multiselect-dropdown class="form-control" [options]="myOptions" formControlName="optionsModel">                    
-                        </ss-multiselect-dropdown>
-                    </div>
-                    <div *ngIf="!updateMedicineForm.controls['optionsModel'].valid && updateMedicineForm.controls['optionsModel'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
-                    </div>          
+                    </div>      
                     <div class="form-group">
                         <label for="text">Tip bolesti:</label>
-                        <select class="form-control" formControlName="type">
+                        <select class="form-control" formControlName="type" [ngClass]="{
+                            'is-valid' : updateMedicamentForm.controls['type'].valid && updateMedicamentForm.controls['type'].touched,
+                            'is-invalid' : updateMedicamentForm.controls['type'].invalid && updateMedicamentForm.controls['type'].touched
+                        }">
                             <option>Antibiotik</option>
                             <option>Analgetik</option>
                             <option>Drugi</option>
                         </select>
                     </div>
-                    <div *ngIf="!updateMedicineForm.controls['type'].valid && updateMedicineForm.controls['type'].touched">
+                    <div *ngIf="!updateMedicamentForm.controls['type'].valid && updateMedicamentForm.controls['type'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-primary" [disabled]="!updateMedicineForm.valid" value="Izmjena">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateMedicamentForm.valid" value="Izmijeni">
                     </div>
                 </form>  
             </div>
         </div>
     </div>
 </div>
-    
 
+<div class="modal fade" id="ingredients" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel" *ngIf="medicament!=undefined">
+                    <img src="{{image_medicine}}" height="40" width="40"> Sastav lijeka {{ medicament.name }}:
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ingredients-body">
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addIngredient" *ngIf="currentUser.role == 'ADMIN'">
+                        <i class="fa fa-plus" aria-hidden="true"></i> Dodaj sastojak
+                    </button>
+                </div>
+                <br>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Naziv</th>
+                            <th *ngIf="currentUser.role == 'ADMIN'">Operacije</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let ingredient of medicamentIngredients">
+                        <tr>
+                            <td>{{ ingredient.name }}</td>
+                            <td *ngIf="currentUser.role == 'ADMIN'">
+                                <button class="btn btn-info btn-sm" (click)="updateIngredient(ingredient)" data-toggle="modal" data-target="#updateIngredient">
+                                    <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmijeni
+                                </button>
+                                &nbsp;
+                                <button class="btn btn-danger btn-sm" (click)="deleteIngredient(ingredient.id)">
+                                    <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obriši
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>  
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="updateIngredient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_medicine}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="updateIngredientForm" (ngSubmit)="updateIngredientValue(updateIngredientForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv sastojka:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv sastojka" [ngClass]="{
+                            'is-valid' : updateIngredientForm.controls['title'].valid && updateIngredientForm.controls['title'].touched,
+                            'is-invalid' : updateIngredientForm.controls['title'].invalid && updateIngredientForm.controls['title'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!updateIngredientForm.controls['title'].valid && updateIngredientForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>      
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!updateIngredientForm.valid" value="Izmijeni">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" id="addIngredient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">          
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <img src="{{image_medicine}}" height="40" width="40">
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="addIngredientForm" (ngSubmit)="addIngredient(addIngredientForm.value)">
+                    <div class="form-group">
+                        <label for="title">Naziv sastojka:</label>
+                        <input type="text" class="form-control" formControlName="title" placeholder="Naziv sastojka" [ngClass]="{
+                            'is-valid' : addIngredientForm.controls['title'].valid && addIngredientForm.controls['title'].touched,
+                            'is-invalid' : addIngredientForm.controls['title'].invalid && addIngredientForm.controls['title'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!addIngredientForm.controls['title'].valid && addIngredientForm.controls['title'].touched">
+                        <span class="badge badge-danger">{{ error }}</span>
+                    </div>      
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" [disabled]="!addIngredientForm.valid" value="Dodaj">
+                    </div>
+                </form>  
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-sm" aria-hidden="true" id="error">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #cf3b1b">          
+                <h5 class="modal-title" style="color:white"><i class="fa fa-exclamation-triangle fa-lg" aria-hidden="true"></i> Greška</h5>
+            </div>
+            <div class="modal-body">
+                <p style="color:#cf3b1b">
+                    Uneseni naziv već postoji!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

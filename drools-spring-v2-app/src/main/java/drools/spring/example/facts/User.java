@@ -13,8 +13,8 @@ import javax.persistence.InheritanceType;
 public class User {
 	
 	public enum ROLE{
-		DOCTOR,
-		ADMIN
+		ADMIN,
+		DOCTOR
 	}
 	
 	@Id
@@ -30,19 +30,21 @@ public class User {
 	
 	private String surname;
 	
+	private String email;
+	
 	private ROLE role;
 	
 	public User() {
 		super();
 	}
 	
-	public User(Long id, String username, String password, String name, String surname, ROLE role) {
+	public User(String username, String password, String name, String surname, String email, ROLE role) {
 		super();
-		this.id = id;
 		this.username = username;
 		this.password = password;
 		this.name = name;
 		this.surname = surname;
+		this.email = email;
 		this.role = role;
 	}
 
@@ -86,6 +88,14 @@ public class User {
 		this.surname = surname;
 	}
 	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public ROLE getRole() {
 		return role;
 	}

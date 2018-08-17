@@ -13,29 +13,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import drools.spring.example.facts.IngredientAllergy;
+import drools.spring.example.facts.MedicamentAllergy;
 import drools.spring.example.facts.Patient;
+import drools.spring.example.services.IngredientAllergyService;
+import drools.spring.example.services.MedicamentAllergyService;
 import drools.spring.example.services.PatientService;
 
 @RestController
-@RequestMapping(value = "/patients")
+@RequestMapping(value = "/api")
 public class PatientController {
 	
 	@Autowired
 	private PatientService patientService;
 	
+	@Autowired
+	private MedicamentAllergyService medicamentAllergyService;
+	
+	@Autowired
+	private IngredientAllergyService ingredientAllergyService;
+	
 	@CrossOrigin
 	@RequestMapping(
+		value = "/patients",
 		method = RequestMethod.POST,
 		consumes = MediaType.APPLICATION_JSON_VALUE,
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Patient> createPatient(@RequestBody Patient patient) throws Exception{
 		Patient saved = new Patient();
+		saved.setPatientId(patient.getPatientId());
 		saved.setName(patient.getName());
 		saved.setSurname(patient.getSurname());
 		saved.setAge(patient.getAge());
-		saved.setDiseases(patient.getDiseases());
-		saved.setMedicines(patient.getMedicines());
 		saved = patientService.save(saved);
 		return new ResponseEntity<Patient>(saved, HttpStatus.CREATED);
 		
@@ -43,6 +53,7 @@ public class PatientController {
 
 	@CrossOrigin
 	@RequestMapping(
+		value = "/patients",
 		method = RequestMethod.PUT,
 		consumes = MediaType.APPLICATION_JSON_VALUE,
 		produces = MediaType.APPLICATION_JSON_VALUE
@@ -52,18 +63,17 @@ public class PatientController {
 		if(saved == null){
 			return new ResponseEntity<Patient>(HttpStatus.BAD_REQUEST);
 		}
+		saved.setPatientId(patient.getPatientId());
 		saved.setName(patient.getName());
 		saved.setSurname(patient.getSurname());
 		saved.setAge(patient.getAge());
-		saved.setDiseases(patient.getDiseases());
-		saved.setMedicines(patient.getMedicines());
 		saved = patientService.save(saved);
 		return new ResponseEntity<Patient>(saved, HttpStatus.OK);
 	}
 	
 	@CrossOrigin
 	@RequestMapping(
-		value = "/{id}",
+		value = "/patients/{id}",
 		method = RequestMethod.GET,
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -77,6 +87,7 @@ public class PatientController {
 	
 	@CrossOrigin
 	@RequestMapping(
+		value = "/patients",
 		method = RequestMethod.GET,
 		produces = MediaType.APPLICATION_JSON_VALUE
 	)
@@ -87,16 +98,25 @@ public class PatientController {
 	
 	@CrossOrigin
 	@RequestMapping(
-		value = "/{id}",
+		value = "/patients/{id}",
 		method = RequestMethod.DELETE
 	)
-	public ResponseEntity<Patient> deletePatientById(@PathVariable Long id) throws Exception{
+	public ResponseEntity<String> deletePatientById(@PathVariable Long id) throws Exception{
 		Patient patient = patientService.findOne(id);
-		if(patient != null){
-			patientService.delete(id);
-			return new ResponseEntity<Patient>(HttpStatus.OK);
+		if(patient == null){
+			return new ResponseEntity<String>("Patient not deleted!", HttpStatus.BAD_REQUEST);
+		}	
+		ArrayList<MedicamentAllergy> medicamentAllergies = (ArrayList<MedicamentAllergy>) medicamentAllergyService.findByPatientId(id);
+		if(!medicamentAllergies.isEmpty()){
+			medicamentAllergyService.delete(medicamentAllergies);
 		}
-		return new ResponseEntity<Patient>(HttpStatus.NOT_FOUND);
+		
+		ArrayList<IngredientAllergy> ingredientAllergies = (ArrayList<IngredientAllergy>) ingredientAllergyService.findByPatientId(id);
+		if(!ingredientAllergies.isEmpty()){
+			ingredientAllergyService.delete(ingredientAllergies);
+		}
+		patientService.delete(id);
+		return new ResponseEntity<String>("Patient deleted!", HttpStatus.OK);
 	}
 	
 }

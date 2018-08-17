@@ -1,0 +1,36 @@
+package drools.spring.rules;
+
+import drools.spring.example.facts.Symptom;
+import drools.spring.example.facts.Illness;
+import drools.spring.example.facts.Diagnose;
+import drools.spring.example.facts.DiagnoseSymptom;
+
+global Long pId;
+
+rule "Patient had 10 or more times high pressure in last 6 months"
+	salience 50
+	agenda-group "set-symptom-num"
+	no-loop 
+	lock-on-active true
+	when
+		$illness: Illness( name == "Hipertenzija" && $numOfSymptoms: symptomsFound  && $numOfSymptoms == 0
+			&& $sym: symptomTermsFound )
+		$d: Diagnose( $idD: id && patientId == pId )
+		$dSymptom: DiagnoseSymptom( diagnoseId == $idD && symptomTerm == "HIGH_PRESSURE" )
+		$s: Symptom( Symptom.Term.TEN_TIMES_HIGH_PRESSURE_IN_LAST_6_MONTHS not memberOf $sym )
+		
+		Number(intValue >= 9) from accumulate(
+			$ds: DiagnoseSymptom(
+				this != $dSymptom,
+				symptomTerm == "HIGH_PRESSURE",
+				date > (addMonths(-6)),
+				patientId == pId
+			),
+			count($ds)
+		)
+	then
+		$illness.setSymptomsFound(1);
+		$illness.getSymptomTermsFound().add(Symptom.Term.TEN_TIMES_HIGH_PRESSURE_IN_LAST_6_MONTHS);
+		update($illness);
+
+end

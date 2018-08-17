@@ -19,41 +19,24 @@ public class Patient {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
+	private String patientId;
+	
 	private String name;
 	
 	private String surname;
 	
 	private int age;
 	
-    @ManyToMany
-    @JoinTable(
-    	name = "patient_diseases",
-    	joinColumns = { @JoinColumn(name = "patient_id") },
-    	inverseJoinColumns = { @JoinColumn(name = "disease_id") }
-    )
-	Set<Disease> diseases;
-	
-    @ManyToMany
-    @JoinTable(
-    	name = "patient_medicines",
-    	joinColumns = { @JoinColumn(name = "patient_id") },
-    	inverseJoinColumns = { @JoinColumn(name = "medicine_id") }
-    )
-	Set<Medicine> medicines;
-
 	public Patient() {
 		super();
 	}
 
-	public Patient(Long id, String name, String surname, int age, Set<Disease> diseases,
-			Set<Medicine> medicines) {
+	public Patient(String patientId, String name, String surname, int age) {
 		super();
-		this.id = id;
+		this.patientId = patientId;
 		this.name = name;
 		this.surname = surname;
 		this.age = age;
-		this.diseases = diseases;
-		this.medicines = medicines;
 	}
 
 	public Long getId() {
@@ -62,6 +45,14 @@ public class Patient {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+	
+	public String getPatientId() {
+		return patientId;
+	}
+
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
 	}
 
 	public String getName() {
@@ -88,20 +79,10 @@ public class Patient {
 		this.age = age;
 	}
 
-	public Set<Disease> getDiseases() {
-		return diseases;
+	@Override
+	public String toString() {
+		return "Patient [id=" + id + ", patientId=" + patientId + ", name=" + name + ", surname=" + surname + ", age="
+				+ age + "]";
 	}
-
-	public void setDiseases(Set<Disease> diseases) {
-		this.diseases = diseases;
-	}
-
-	public Set<Medicine> getMedicines() {
-		return medicines;
-	}
-
-	public void setMedicines(Set<Medicine> medicines) {
-		this.medicines = medicines;
-	}
-	
+		
 }

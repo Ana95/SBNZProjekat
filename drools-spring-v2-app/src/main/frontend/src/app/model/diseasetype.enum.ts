@@ -1,5 +1,0 @@
-export enum DISEASETYPE {
-    FIRST_GROUP,
-    SECOND_GROUP,
-    THIRD_GROUP
-}

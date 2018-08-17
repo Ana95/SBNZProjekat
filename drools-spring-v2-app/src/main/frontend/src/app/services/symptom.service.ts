@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Symptom } from '../model/symptom';
 
 @Injectable({
@@ -7,35 +7,50 @@ import { Symptom } from '../model/symptom';
 })
 export class SymptomService {
 
-  readonly URL : string = 'http://localhost:8080/symptoms';
-
   constructor(private http : HttpClient) {
 
   }
 
   addSymptom(symptom : Symptom){
-    return this.http.post<Symptom>(this.URL, 
+    console.log(symptom);
+    return this.http.post<Symptom>("/api/symptoms", 
       {
-        "title" : symptom.title,
-        "isSpecific" : symptom.isSpecific
+        "term" : symptom.term,
+        "helper" : symptom.helper,
+        "temperature" : symptom.temperature,
+        "isSpecific" : symptom.isSpecific,
+        "illness" : symptom.illness
       });
   }
 
   getSymptoms(){
-    return this.http.get<Symptom[]>(this.URL);
+    return this.http.get<Symptom[]>("/api/symptoms");
+  }
+
+  getSymptomsByIllness(illnessId : number){
+    let param = new HttpParams().set('illnessId', illnessId.toString());
+    return this.http.get<Symptom[]>("/api/symptoms", {params : param});
+  }
+
+  getSortedSymptomsByIllness(illness_id : number){
+    let param = new HttpParams().set('illness_id', illness_id.toString());
+    return this.http.get<Symptom[]>("/api/symptoms", {params : param});
   }
 
   updateSymptom(symptom : Symptom){
-    return this.http.put<Symptom>(this.URL, 
+    return this.http.put<Symptom>("/api/symptoms", 
     {
       "id" : symptom.id,
-      "title" : symptom.title,
-      "isSpecific" : symptom.isSpecific
+      "term" : symptom.term,
+      "helper" : symptom.helper,
+      "temperature" : symptom.temperature,
+      "isSpecific" : symptom.isSpecific,
+      "illness" : symptom.illness
     });
   }
   
   deleteSymptomById(symptomId : number){
-    return this.http.delete(this.URL + '/' + symptomId);
+    return this.http.delete('/api/symptoms/' + symptomId, {responseType : 'text'});
   }
   
 }

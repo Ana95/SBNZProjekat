@@ -8,24 +8,20 @@ import { MultiselectDropdownModule } from 'angular-2-dropdown-multiselect';
 import { AppComponent } from './app.component';
 import { AdministratorComponent } from './components/administrator/administrator.component';
 import { DoctorComponent } from './components/doctor/doctor.component';
-import { MedicinecomponentComponent } from './components/medicinecomponent/medicinecomponent.component';
-import { DiseaseComponent } from './components/disease/disease.component';
-import { SymptomComponent } from './components/symptom/symptom.component';
-
-import { DoctorService } from './services/doctor.service';
-import { ComponentService } from './services/component.service';
-import { DiseaseService } from './services/disease.service';
-import { SymptomService } from './services/symptom.service';
-import { MedicineService } from './services/medicine.service';
+import { IllnessComponent } from './components/illness/illness.component';
 import { CureComponent } from './components/cure/cure.component';
 import { LoginComponent } from './components/login/login.component';
 import { MedicalWorkerComponent } from './components/medical-worker/medical-worker.component';
 import { PatientComponent } from './components/patient/patient.component';
-import { PersonalDiagnosisComponent } from './components/personal-diagnosis/personal-diagnosis.component';
 import { SystemDiagnosisComponent } from './components/system-diagnosis/system-diagnosis.component';
-import { SymptomsByDiseaseComponent } from './components/symptoms-by-disease/symptoms-by-disease.component';
-import { DiseasesBySimptomsComponent } from './components/diseases-by-simptoms/diseases-by-simptoms.component';
-import { TherapyComponent } from './components/therapy/therapy.component';
+import { CureAllergyComponent } from './components/cure-allergy/cure-allergy.component';
+import { ReportComponent } from './components/report/report.component';
+
+import { IngredientService } from './services/ingredient.service';
+import { IllnessService } from './services/illness.service';
+import { SymptomService } from './services/symptom.service';
+import { MedicamentService } from './services/medicament.service';
+import { WebSocketServiceService } from './services/web-socket-service.service';
 
 const appRoutes: Routes = [
   { path: 'administrator', component: AdministratorComponent },
@@ -38,18 +34,14 @@ const appRoutes: Routes = [
     AppComponent,
     AdministratorComponent,
     DoctorComponent,
-    MedicinecomponentComponent,
-    DiseaseComponent,
-    SymptomComponent,
+    IllnessComponent,
     CureComponent,
     LoginComponent,
     MedicalWorkerComponent,
     PatientComponent,
-    PersonalDiagnosisComponent,
     SystemDiagnosisComponent,
-    SymptomsByDiseaseComponent,
-    DiseasesBySimptomsComponent,
-    TherapyComponent
+    CureAllergyComponent,
+    ReportComponent
   ],
   imports: [
     BrowserModule,
@@ -62,11 +54,11 @@ const appRoutes: Routes = [
     { enableTracing: true })
   ],
   providers: [
-    DoctorService,
-    ComponentService,
-    DiseaseService,
+    IngredientService,
+    IllnessService,
     SymptomService,
-    MedicineService
+    MedicamentService,
+    WebSocketServiceService
   ],
   bootstrap: [AppComponent]
 })

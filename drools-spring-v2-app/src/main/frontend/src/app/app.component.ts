@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { WebSocketServiceService } from './services/web-socket-service.service';
+declare var $:any;
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,17 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+
+  monitoringMessage: string;
+  
+  constructor(private webSocketService : WebSocketServiceService){
+    let stompClient = this.webSocketService.connect();
+    stompClient.connect({}, frame =>{
+      stompClient.subscribe('/issue', message =>{
+        this.monitoringMessage = message.body;
+        $("#monitoring").modal("show");
+      });
+    });
+  }
+
 }

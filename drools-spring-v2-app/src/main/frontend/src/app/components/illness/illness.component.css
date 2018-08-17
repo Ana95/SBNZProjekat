@@ -1,0 +1,15 @@
+.jumbotron{
+    overflow-y: scroll;
+    height: 550px;
+}
+
+#symptoms{
+    overflow-y: scroll;
+    height: 350px;
+}
+
+#illnesses-table th, 
+#illnesses-table td {
+    border: 1px solid rgb(16, 6, 56);
+}
+

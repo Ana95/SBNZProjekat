@@ -1,43 +1,37 @@
 <div class="jumbotron">
     <div class="row">
-        <div class="col-md-11"></div>
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addDoctor">
-            <i class="fa fa-plus" aria-hidden="true"></i>
+        <div class="col-md-10"></div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addDoctor">
+            <i class="fa fa-plus" aria-hidden="true"></i> Dodaj ljekara
         </button>
     </div>
     <br>
-    <div class="row">
-        <div class="col-md-2"></div>
-        <div class="col-md-8">
-            <div class="alert alert-success" role="alert" *ngFor="let doctor of doctors">
-                <h5>
-                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<b>Korisnicko ime :</b> {{doctor.username}}
-                </h5>
-                <h5>
-                    <i class="fa fa-unlock-alt" aria-hidden="true"></i>&nbsp;<b>Lozinka :</b> {{doctor.password}}
-                </h5>
-                <h5>
-                    <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;<b>Ime i prezime :</b> {{doctor.name}} {{doctor.surname}}
-                </h5>
-                <h5>
-                    <i class="fa fa-university" aria-hidden="true"></i>&nbsp;<b>Institucija :</b> {{doctor.institution}}
-                </h5>
-                <hr>
-                <div class="row">
-                    <div class="col-8"></div>
-                    <div class="col-4">
-                        <button class="btn btn-primary btn-sm" (click)="deleteDoctor(doctor)">
-                            <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
-                        </button>
-                        &nbsp;
-                        <button class="btn btn-primary btn-sm" (click)="updateDoctor(doctor)" data-toggle="modal" data-target="#updateDoctor">
-                            <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmjeni
-                        </button>
-                    </div>
-                </div>   
-            </div>
-        </div>
-    </div> 
+    <table class="table">
+        <tr>
+            <th>Korisničko ime</th>
+            <th>Lozinka</th>
+            <th>Ime</th>
+            <th>Prezime</th>
+            <th>Imejl</th>
+            <th>Operacije</th>
+        </tr>
+        <tr *ngFor="let doctor of doctors">
+            <td>{{ doctor.username }}</td>
+            <td>{{ doctor.password }}</td>
+            <td>{{ doctor.name }}</td>
+            <td>{{ doctor.surname }}</td>
+            <td>{{ doctor.email }}</td>
+            <td>
+                <button class="btn btn-info btn-sm" (click)="updateDoctor(doctor)" data-toggle="modal" data-target="#updateDoctor">
+                    <i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i> Izmijeni
+                </button>
+                &nbsp;
+                <button class="btn btn-danger btn-sm" (click)="deleteDoctor(doctor)">
+                    <i class="fa fa-trash fa-lg" aria-hidden="true"></i> Obrisi
+                </button>
+            </td>
+        </tr>
+    </table> 
 </div>
 
 
@@ -56,38 +50,75 @@
                 <form [formGroup]="rForm" (ngSubmit)="addDoctor(rForm.value)">
                     <div class="form-group">
                         <label for="title">Korisnicko ime:</label>
-                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime">
+                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime" [ngClass]="{
+                            'is-valid' : rForm.controls['username'].valid && rForm.controls['username'].touched,
+                            'is-invalid' : rForm.controls['username'].invalid && rForm.controls['username'].touched
+                        }">
                     </div>
                     <div *ngIf="!rForm.controls['username'].valid && rForm.controls['username'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
                         <label for="password">Lozinka:</label>
-                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka">
+                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka" [ngClass]="{
+                            'is-valid' : rForm.controls['password'].valid && rForm.controls['password'].touched,
+                            'is-invalid' : rForm.controls['password'].invalid && rForm.controls['password'].touched
+                        }">
                     </div>          
                     <div *ngIf="!rForm.controls['password'].valid && rForm.controls['password'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="password.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="password.errors.minlength">
+                            Lozinka mora da sadrži minimalno 8 karaktera...potrebno je još
+                            {{password.errors.minlength.requiredLength - password.errors.minlength.actualLength}} karaktera!
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Potvrdite lozinku:</label>
+                        <input type="password" class="form-control" formControlName="repeatedPassword" placeholder="Lozinka" [ngClass]="{
+                            'is-valid' : rForm.controls['repeatedPassword'].valid && rForm.controls['repeatedPassword'].touched,
+                            'is-invalid' : rForm.controls['repeatedPassword'].invalid && rForm.controls['repeatedPassword'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!rForm.controls['repeatedPassword'].valid && rForm.controls['repeatedPassword'].touched">
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.minlength">
+                            Lozinka mora da sadrži minimalno 8 karaktera...potrebno je još
+                            {{repeatedPassword.errors.minlength.requiredLength - repeatedPassword.errors.minlength.actualLength}} karaktera!
+                        </span>
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.match">
+                            Lozinke nisu iste!
+                        </span>
                     </div>
                     <div class="form-group">
                         <label for="text">Ime:</label>
-                        <input type="text" class="form-control" formControlName="name" placeholder="Ime">
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime" [ngClass]="{
+                            'is-valid' : rForm.controls['name'].valid && rForm.controls['name'].touched,
+                            'is-invalid' : rForm.controls['name'].invalid && rForm.controls['name'].touched
+                        }">
                     </div>          
                     <div *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
                         <label for="text">Prezime:</label>
-                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime">
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime" [ngClass]="{
+                            'is-valid' : rForm.controls['surname'].valid && rForm.controls['surname'].touched,
+                            'is-invalid' : rForm.controls['surname'].invalid && rForm.controls['surname'].touched
+                        }">
                     </div>          
                     <div *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="text">Institucija:</label>
-                        <input type="text" class="form-control" formControlName="institution" placeholder="Institucija">
+                        <label for="text">Imejl:</label>
+                        <input type="text" class="form-control" formControlName="email" placeholder="Imejl" [ngClass]="{
+                            'is-invalid': email.invalid && email.touched,
+                            'is-valid': email.valid && email.touched
+                        }">
                     </div>
-                    <div *ngIf="!rForm.controls['institution'].valid && rForm.controls['institution'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
+                    <div *ngIf="email.errors && email.touched">
+                        <span class="badge badge-danger" *ngIf="email.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="email.errors.pattern">Imejl adresa nije ispravna!</span>
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Dodaj">
@@ -113,41 +144,78 @@
                 <form [formGroup]="rForm" (ngSubmit)="updateDoctorsValue(rForm.value)">
                     <div class="form-group">
                         <label for="title">Korisnicko ime:</label>
-                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime">
+                        <input type="text" class="form-control" formControlName="username" placeholder="Korisnicko ime" [ngClass]="{
+                            'is-valid' : rForm.controls['username'].valid && rForm.controls['username'].touched,
+                            'is-invalid' : rForm.controls['username'].invalid && rForm.controls['username'].touched
+                        }">
                     </div>
-                    <div *ngIf="!rForm.controls['username'].valid && rForm.controls['username'].touched">
+                    <div *ngIf="!rForm.controls['username'].valid">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
                         <label for="password">Lozinka:</label>
-                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka">
+                        <input type="password" class="form-control" formControlName="password" placeholder="Lozinka" [ngClass]="{
+                            'is-valid' : rForm.controls['password'].valid && rForm.controls['password'].touched,
+                            'is-invalid' : rForm.controls['password'].invalid && rForm.controls['password'].touched
+                        }">
                     </div>          
-                    <div *ngIf="!rForm.controls['password'].valid && rForm.controls['password'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
+                    <div *ngIf="!rForm.controls['password'].valid">
+                        <span class="badge badge-danger" *ngIf="password.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="password.errors.minlength">
+                            Lozinka mora da sadrži minimalno 8 karaktera...potrebno je još
+                            {{password.errors.minlength.requiredLength - password.errors.minlength.actualLength}} karaktera!
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Potvrdite lozinku:</label>
+                        <input type="password" class="form-control" formControlName="repeatedPassword" placeholder="Lozinka" [ngClass]="{
+                            'is-valid' : rForm.controls['repeatedPassword'].valid && rForm.controls['repeatedPassword'].touched,
+                            'is-invalid' : rForm.controls['repeatedPassword'].invalid && rForm.controls['repeatedPassword'].touched
+                        }">
+                    </div>
+                    <div *ngIf="!rForm.controls['repeatedPassword'].valid">
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.minlength">
+                            Lozinka mora da sadrži minimalno 8 karaktera...potrebno je još
+                            {{repeatedPassword.errors.minlength.requiredLength - repeatedPassword.errors.minlength.actualLength}} karaktera!
+                        </span>
+                        <span class="badge badge-danger" *ngIf="repeatedPassword.errors.match">
+                            Lozinke nisu iste!
+                        </span>
                     </div>
                     <div class="form-group">
                         <label for="text">Ime:</label>
-                        <input type="text" class="form-control" formControlName="name" placeholder="Ime">
+                        <input type="text" class="form-control" formControlName="name" placeholder="Ime" [ngClass]="{
+                            'is-valid' : rForm.controls['name'].valid && rForm.controls['name'].touched,
+                            'is-invalid' : rForm.controls['name'].invalid && rForm.controls['name'].touched
+                        }">
                     </div>          
-                    <div *ngIf="!rForm.controls['name'].valid && rForm.controls['name'].touched">
+                    <div *ngIf="!rForm.controls['name'].valid">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
                         <label for="text">Prezime:</label>
-                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime">
+                        <input type="text" class="form-control" formControlName="surname" placeholder="Prezime" [ngClass]="{
+                            'is-valid' : rForm.controls['surname'].valid && rForm.controls['surname'].touched,
+                            'is-invalid' : rForm.controls['surname'].invalid && rForm.controls['surname'].touched
+                        }">
                     </div>          
-                    <div *ngIf="!rForm.controls['surname'].valid && rForm.controls['surname'].touched">
+                    <div *ngIf="!rForm.controls['surname'].valid">
                         <span class="badge badge-danger">{{ error }}</span>
                     </div>
                     <div class="form-group">
-                        <label for="text">Institucija:</label>
-                        <input type="text" class="form-control" formControlName="institution" placeholder="Institucija">
+                        <label for="text">Imejl:</label>
+                        <input type="text" class="form-control" formControlName="email" placeholder="Imejl" [ngClass]="{
+                            'is-invalid': email.invalid && email.touched,
+                            'is-valid': email.valid && email.touched
+                        }">
                     </div>
-                    <div *ngIf="!rForm.controls['institution'].valid && rForm.controls['institution'].touched">
-                        <span class="badge badge-danger">{{ error }}</span>
+                    <div *ngIf="email.errors">
+                        <span class="badge badge-danger" *ngIf="email.errors.required">{{ error }}</span>
+                        <span class="badge badge-danger" *ngIf="email.errors.pattern">Imejl adresa nije ispravna!</span>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Izmjeni">
+                        <input type="submit" class="btn btn-primary" [disabled]="!rForm.valid" value="Izmijeni">
                     </div>
                 </form>  
             </div>

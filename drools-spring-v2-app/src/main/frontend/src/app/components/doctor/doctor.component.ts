@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, AbstractControl, ValidatorFn } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Doctor } from '../../model/doctor';
-import { DoctorService } from '../../services/doctor.service';
+import { User } from '../../model/user';
+import { ROLE } from '../../model/role.enum';
+import { UserService } from '../../services/user.service';
+import { Subscription } from 'rxjs';
 declare var $ : any;
 
 @Component({
@@ -16,82 +18,109 @@ export class DoctorComponent implements OnInit {
   rForm : FormGroup;
   post:any;
   error:string ="Polje je obavezno!";
-  username : string;
-  password : string;
-  name : string;
-  surname : string;
+  email : FormControl;
+  password : FormControl;
+  repeatedPassword : FormControl;
   institution : string;
-  doctor : Doctor;
-  doctorForUpdate : Doctor;
-  doctors : Doctor[];
+  doctor : User;
+  doctorForUpdate : User;
+  doctors : User[];
 
-  constructor(private fb:FormBuilder, private doctorService : DoctorService) {
-    this.rForm = fb.group({
-      'username':[null, Validators.required],
-      'password': [null, Validators.required],
-      'name': [null, Validators.required],
-      'surname': [null, Validators.required],
-      'institution': [null, Validators.required]
+  constructor(private fb : FormBuilder, private userService : UserService) {
+    var emailPattern = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$";
+    this.email = new FormControl('', [
+      Validators.required,
+      Validators.pattern(emailPattern)
+    ]);
+    this.password =new FormControl('', [
+      Validators.required,
+      Validators.minLength(8)
+    ]);
+    this.repeatedPassword =new FormControl('', [
+      Validators.required, 
+      Validators.minLength(8), 
+      this.matchOtherValidator('password')
+    ]);
+    this.rForm = this.fb.group({
+    'username' : new FormControl(null, [Validators.required]),
+    'password': this.password,
+    'repeatedPassword': this.repeatedPassword,
+    'name': new FormControl(null, [Validators.required]),
+    'surname' : new FormControl(null, Validators.required),
+    'email': this.email
     });
    }
 
   ngOnInit() {
-    this.doctorService.getDoctors().subscribe(
+    this.userService.getUsers().subscribe(
       res => {
         this.doctors = res;
-      }
-    ), err => this.errorHandle(err);
+      }, err => this.errorHandle(err));
   }
 
-  addDoctor(post){
-    this.username = post.username;
-    this.password = post.password;
-    this.name = post.name;
-    this.surname = post.surname;
-    this.institution = post.institution;
-    let newDoctor = new Doctor(this.username, this.password, this.name, this.surname, this.institution);
-    this.doctorService.addDoctor(newDoctor).subscribe(
-      res =>{
-        this.doctors.push(res);
-      }
-    ), err => this.errorHandle(err);
-    $('#addDoctor').modal("toggle");
-
+  addDoctor(data){
+    var doctor = new User(data.username, data.password, data.name, data.surname, data.email, ROLE.DOCTOR);
+    this.userService.addUser(doctor).subscribe(
+      res => {
+        this.doctor = res;
+        this.doctors.push(this.doctor);
+      }, err => this.errorHandle(err));
+      $('#addDoctor').modal("toggle");
   }
 
-  deleteDoctor(doctor : Doctor){
-    this.doctorService.deleteDoctorById(doctor.id).subscribe(
+  matchOtherValidator(otherControlName: string): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } => {
+        const otherControl: AbstractControl = control.root.get(otherControlName);
+
+        if (otherControl) {
+            const subscription: Subscription = otherControl
+                .valueChanges
+                .subscribe(() => {
+                    control.updateValueAndValidity();
+                    subscription.unsubscribe();
+                });
+        }
+
+        return (otherControl && control.value !== otherControl.value) ? {match: true} : null;
+    };
+  } 
+
+  deleteDoctor(doctor : User){
+    this.userService.deleteUser(doctor.id).subscribe(
       res =>{
+        console.log(res);
         for(let i in this.doctors){
           if(this.doctors[i].id == doctor.id){
             this.doctors.splice(Number(i), 1);
           }
         }
-      }), err => this.errorHandle(err);
+      }, err => this.errorHandle(err));
   }
 
   updateDoctor(doctor){
     this.doctorForUpdate = doctor;
     this.rForm.controls['username'].setValue(this.doctorForUpdate.username);
     this.rForm.controls['password'].setValue(this.doctorForUpdate.password);
+    this.rForm.controls['repeatedPassword'].setValue(this.doctorForUpdate.password);
     this.rForm.controls['name'].setValue(this.doctorForUpdate.name);
     this.rForm.controls['surname'].setValue(this.doctorForUpdate.surname);
-    this.rForm.controls['institution'].setValue(this.doctorForUpdate.institution);
+    this.rForm.controls['email'].setValue(this.doctorForUpdate.email);
   }
 
-  updateDoctorsValue(post){
-    this.doctorForUpdate.username = post.username;
-    this.doctorForUpdate.password = post.password;
-    this.doctorForUpdate.name = post.name;
-    this.doctorForUpdate.surname = post.surname;
-    this.doctorForUpdate.institution = post.institution;
-    this.doctorService.updateDoctor(this.doctorForUpdate).subscribe(
+  updateDoctorsValue(data){
+    this.doctorForUpdate.username = data.username;
+    this.doctorForUpdate.password = data.password;
+    this.doctorForUpdate.name = data.name;
+    this.doctorForUpdate.surname = data.surname;
+    this.doctorForUpdate.email = data.email;
+    this.userService.updateUser(this.doctorForUpdate).subscribe(
       res => {
         this.rForm.controls['username'].setValue("");
         this.rForm.controls['password'].setValue("");
+        this.rForm.controls['repeatedPassword'].setValue("");
         this.rForm.controls['name'].setValue("");
         this.rForm.controls['surname'].setValue("");
-        this.rForm.controls['institution'].setValue("");
+        this.rForm.controls['email'].setValue("");
       }
     ), err => this.errorHandle(err);
     $('#updateDoctor').modal("toggle");

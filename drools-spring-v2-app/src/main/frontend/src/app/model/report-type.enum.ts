@@ -1,0 +1,5 @@
+export enum REPORTTYPE {
+    CHRONIC_ILLNESS,
+    ADDICT,
+    WEAKENED_IMMUNITY
+}

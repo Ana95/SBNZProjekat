@@ -6,44 +6,44 @@ import { Patient } from '../model/patient';
   providedIn: 'root'
 })
 export class PatientService {
-
-  readonly URL : string = 'http://localhost:8080/patients';
-
+  
   constructor(private http : HttpClient) { 
 
   }
 
   getPatients(){
-    return this.http.get<Patient[]>(this.URL);
+    return this.http.get<Patient[]>("/api/patients");
+  }
+
+  getPatient(patientId : number){
+    return this.http.get<Patient>("/api/patients/" + patientId);
   }
 
   addPatient(patient : Patient){
-    return this.http.post<Patient>(this.URL, 
+    return this.http.post<Patient>("/api/patients", 
       {
+        "patientId" : patient.patientId,
         "name" : patient.name,
         "surname" : patient.surname,
-        "age" : patient.age,
-        "diseases" : patient.diseases,
-        "medicines" : patient.medicines
+        "age" : patient.age
       }
     );
   }
 
   updatePatient(patient : Patient){
-    return this.http.put<Patient>(this.URL, 
+    return this.http.put<Patient>("/api/patients", 
       {
         "id" : patient.id,
+        "patientId" : patient.patientId,
         "name" : patient.name,
         "surname" : patient.surname,
-        "age" : patient.age,
-        "diseases" : patient.diseases,
-        "medicines" : patient.medicines
+        "age" : patient.age
       }
     );
   }
 
   deletePatientById(patientId : number){
-    return this.http.delete(this.URL + '/' + patientId);
+    return this.http.delete('/api/patients/' + patientId, {responseType : 'text'});
   }
   
 }
